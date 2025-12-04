@@ -1,0 +1,781 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>Video Call - Live Support</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 20px;
+      background-color: #1a1a1a;
+      color: white;
+    }
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    .video-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+      margin-top: 20px;
+    }
+    .video-box {
+      flex: 1;
+      min-width: 300px;
+      background: #2a2a2a;
+      border-radius: 10px;
+      overflow: hidden;
+      position: relative;
+    }
+    video {
+      width: 100%;
+      height: auto;
+      background: black;
+      display: block;
+    }
+    .video-label {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      background: rgba(0,0,0,0.7);
+      color: white;
+      padding: 5px 10px;
+      border-radius: 5px;
+      font-size: 14px;
+    }
+    .controls {
+      margin-top: 20px;
+      text-align: center;
+      background: #2a2a2a;
+      padding: 20px;
+      border-radius: 10px;
+    }
+    .control-btn {
+      background: #4CAF50;
+      color: white;
+      border: none;
+      padding: 12px 24px;
+      margin: 5px;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 16px;
+      transition: background-color 0.3s;
+    }
+    .control-btn:hover {
+      background: #45a049;
+    }
+    .control-btn.end-call {
+      background: #f44336;
+    }
+    .control-btn.end-call:hover {
+      background: #d32f2f;
+    }
+    .control-btn.inactive {
+      background: #666;
+    }
+    .status-bar {
+      background: #333;
+      padding: 10px;
+      border-radius: 5px;
+      margin-bottom: 20px;
+      text-align: center;
+    }
+    .permission-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.9);
+      z-index: 1000;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+    }
+    .permission-box {
+      background: white;
+      color: #333;
+      padding: 40px;
+      border-radius: 10px;
+      max-width: 500px;
+    }
+    .permission-box h2 {
+      color: #f44336;
+      margin-top: 0;
+    }
+    .permission-btn {
+      background: #4CAF50;
+      color: white;
+      border: none;
+      padding: 12px 24px;
+      margin: 10px;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 16px;
+    }
+    @media (max-width: 768px) {
+      .video-container {
+        flex-direction: column;
+      }
+      .control-btn {
+        padding: 10px;
+        font-size: 14px;
+        margin: 2px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Permission Overlay (hidden by default) -->
+  <div id="permissionOverlay" class="permission-overlay" style="display: none;">
+    <div class="permission-box">
+      <h2>Permission Required</h2>
+      <p id="permissionMessage">Please allow camera and microphone access to start the video call.</p>
+      <p><strong id="permissionHint">If you've denied permissions, please refresh the page or check browser settings.</strong></p>
+      <button id="retryPermission" class="permission-btn">Retry</button>
+      <button id="skipPermission" class="permission-btn" style="background: #666;">Continue Without Camera</button>
+    </div>
+  </div>
+
+  <div class="container">
+    <div class="status-bar">
+      <h2 id="status">Initializing Video Call...</h2>
+      <p id="connectionStatus">Connecting...</p>
+      <p id="retryCount" style="font-size: 12px; color: #aaa;"></p>
+    </div>
+    
+    <div class="video-container">
+      <div class="video-box">
+        <div class="video-label" id="localLabel">You</div>
+        <video id="localVideo" autoplay muted playsinline></video>
+      </div>
+      
+      <div class="video-box">
+        <div class="video-label" id="remoteLabel">Remote</div>
+        <video id="remoteVideo" autoplay playsinline></video>
+      </div>
+    </div>
+    
+    <div class="controls">
+      <button id="toggleVideo" class="control-btn">Turn Off Camera</button>
+      <button id="toggleAudio" class="control-btn">Mute Microphone</button>
+      <button id="toggleScreen" class="control-btn">Share Screen</button>
+      <button id="endCall" class="control-btn end-call">End Call</button>
+    </div>
+  </div>
+
+  <script src="https://cdn.socket.io/4.6.1/socket.io.min.js"></script>
+  <script>
+    const socket = io(window.location.origin);
+    const params = new URLSearchParams(window.location.search);
+    const role = params.get("role") || "user";
+    const roomId = params.get("room");
+    const userName = params.get("name") || (role === "admin" ? "Support Agent" : "User");
+
+    let localStream = null;
+    let remoteStream = null;
+    let pc = null;
+    let videoEnabled = true;
+    let audioEnabled = true;
+    let screenShareActive = false;
+    let screenStream = null;
+    let connectionAttempts = 0;
+    const MAX_CONNECTION_ATTEMPTS = 3;
+    let peerConnectionConfigured = false;
+    let mediaStreamReady = false;
+    let iceCandidates = [];
+
+    // DOM Elements
+    const statusEl = document.getElementById("status");
+    const connectionStatusEl = document.getElementById("connectionStatus");
+    const retryCountEl = document.getElementById("retryCount");
+    const localVideo = document.getElementById("localVideo");
+    const remoteVideo = document.getElementById("remoteVideo");
+    const localLabel = document.getElementById("localLabel");
+    const remoteLabel = document.getElementById("remoteLabel");
+    const toggleVideoBtn = document.getElementById("toggleVideo");
+    const toggleAudioBtn = document.getElementById("toggleAudio");
+    const toggleScreenBtn = document.getElementById("toggleScreen");
+    const endCallBtn = document.getElementById("endCall");
+    const permissionOverlay = document.getElementById("permissionOverlay");
+    const permissionMessage = document.getElementById("permissionMessage");
+    const permissionHint = document.getElementById("permissionHint");
+    const retryPermissionBtn = document.getElementById("retryPermission");
+    const skipPermissionBtn = document.getElementById("skipPermission");
+
+    // Update UI labels
+    localLabel.textContent = userName;
+    remoteLabel.textContent = role === "admin" ? "Customer" : "Support Agent";
+
+    // Apple device detection and fix
+    const isAppleDevice = /iPad|iPhone|iPod|Mac/.test(navigator.platform) || 
+                         (navigator.userAgent.includes("Mac") && "ontouchend" in document);
+
+    // Enhanced getLocalMedia with retry logic
+    async function getLocalMedia(retryCount = 0) {
+      try {
+        const constraints = {
+          video: {
+            width: { ideal: 1280, min: 640 },
+            height: { ideal: 720, min: 480 },
+            frameRate: { ideal: 30, min: 20 },
+            // Apple-specific constraints
+            ...(isAppleDevice && {
+              facingMode: { ideal: "user" },
+              aspectRatio: { ideal: 1.7777777778 } // 16:9
+            })
+          },
+          audio: {
+            echoCancellation: true,
+            noiseSuppression: true,
+            autoGainControl: true
+          }
+        };
+
+        // For Apple devices or if user denied camera, try with just audio first
+        if (isAppleDevice && retryCount > 0) {
+          constraints.video = false;
+          permissionMessage.textContent = "Trying with audio only...";
+        }
+
+        console.log("Requesting media with constraints:", constraints);
+        localStream = await navigator.mediaDevices.getUserMedia(constraints);
+        
+        // Check if we actually got video
+        const videoTracks = localStream.getVideoTracks();
+        if (videoTracks.length > 0) {
+          console.log("Got video track:", videoTracks[0].label);
+          videoEnabled = true;
+        } else {
+          console.log("No video track available, using audio only");
+          videoEnabled = false;
+          toggleVideoBtn.textContent = "Camera Not Available";
+          toggleVideoBtn.disabled = true;
+          toggleVideoBtn.classList.add("inactive");
+        }
+
+        // Check audio
+        const audioTracks = localStream.getAudioTracks();
+        if (audioTracks.length > 0) {
+          console.log("Got audio track:", audioTracks[0].label);
+          audioEnabled = true;
+        } else {
+          console.log("No audio track available");
+          audioEnabled = false;
+          toggleAudioBtn.textContent = "Microphone Not Available";
+          toggleAudioBtn.disabled = true;
+          toggleAudioBtn.classList.add("inactive");
+        }
+
+        localVideo.srcObject = localStream;
+        mediaStreamReady = true;
+        
+        // Hide permission overlay if shown
+        permissionOverlay.style.display = "none";
+        
+        return true;
+      } catch (err) {
+        console.error("Error accessing media devices (attempt " + retryCount + "):", err.name, err.message);
+        
+        if (retryCount < MAX_CONNECTION_ATTEMPTS) {
+          // Show user-friendly error message
+          permissionMessage.textContent = "Please allow camera and microphone access";
+          permissionHint.textContent = "Click 'Allow' when prompted by your browser";
+          permissionOverlay.style.display = "flex";
+          
+          return new Promise(resolve => {
+            setTimeout(async () => {
+              const success = await getLocalMedia(retryCount + 1);
+              resolve(success);
+            }, 1000);
+          });
+        } else {
+          // Max attempts reached
+          permissionMessage.textContent = "Unable to access camera or microphone";
+          permissionHint.textContent = "Please check your browser permissions and refresh the page";
+          permissionOverlay.style.display = "flex";
+          return false;
+        }
+      }
+    }
+
+    function createPeerConnection() {
+      if (pc) {
+        pc.close();
+        pc = null;
+      }
+
+      const config = {
+        iceServers: [
+          { urls: "stun:stun.l.google.com:19302" },
+          { urls: "stun:stun1.l.google.com:19302" },
+          { urls: "stun:stun2.l.google.com:19302" },
+          { urls: "stun:stun3.l.google.com:19302" },
+          { urls: "stun:stun4.l.google.com:19302" }
+        ],
+        iceTransportPolicy: 'all',
+        bundlePolicy: 'max-bundle',
+        rtcpMuxPolicy: 'require'
+      };
+
+      // Apple-specific RTCPeerConnection config
+      if (isAppleDevice) {
+        config.sdpSemantics = 'unified-plan';
+        config.iceCandidatePoolSize = 5;
+      }
+
+      pc = new RTCPeerConnection(config);
+
+      // Handle incoming remote tracks
+      pc.ontrack = (event) => {
+        console.log("Received remote track:", event.track.kind);
+        if (!remoteVideo.srcObject) {
+          remoteVideo.srcObject = event.streams[0];
+          remoteStream = event.streams[0];
+        }
+      };
+
+      // ICE candidate handling with buffering
+      pc.onicecandidate = (event) => {
+        if (event.candidate) {
+          console.log("Generated ICE candidate:", event.candidate.type);
+          // Buffer candidates if socket not ready
+          if (socket.connected && peerConnectionConfigured) {
+            socket.emit("ice", { room: roomId, candidate: event.candidate });
+          } else {
+            iceCandidates.push(event.candidate);
+          }
+        } else {
+          console.log("All ICE candidates generated");
+          // Send buffered candidates
+          flushIceCandidates();
+        }
+      };
+
+      // Connection state changes
+      pc.onconnectionstatechange = () => {
+        console.log("Connection state changed to:", pc.connectionState);
+        connectionStatusEl.textContent = `Connection: ${pc.connectionState}`;
+        
+        switch(pc.connectionState) {
+          case "connected":
+            statusEl.textContent = "Call Connected";
+            connectionStatusEl.style.color = "#4CAF50";
+            break;
+          case "disconnected":
+            statusEl.textContent = "Reconnecting...";
+            connectionStatusEl.style.color = "#ff9800";
+            // Try to reconnect
+            setTimeout(reconnectIfNeeded, 1000);
+            break;
+          case "failed":
+            statusEl.textContent = "Connection Failed";
+            connectionStatusEl.style.color = "#f44336";
+            reconnectIfNeeded();
+            break;
+          case "closed":
+            statusEl.textContent = "Call Ended";
+            break;
+        }
+      };
+
+      // ICE connection state
+      pc.oniceconnectionstatechange = () => {
+        console.log("ICE connection state:", pc.iceConnectionState);
+        
+        // Handle ICE failures
+        if (pc.iceConnectionState === "failed") {
+          console.log("ICE connection failed, restarting ICE...");
+          pc.restartIce();
+        } else if (pc.iceConnectionState === "disconnected") {
+          console.log("ICE disconnected, attempting to reconnect...");
+          setTimeout(reconnectIfNeeded, 2000);
+        }
+      };
+
+      // Signaling state
+      pc.onsignalingstatechange = () => {
+        console.log("Signaling state:", pc.signalingState);
+      };
+
+      peerConnectionConfigured = true;
+    }
+
+    // Flush buffered ICE candidates
+    function flushIceCandidates() {
+      if (socket.connected && peerConnectionConfigured) {
+        while (iceCandidates.length > 0) {
+          const candidate = iceCandidates.shift();
+          socket.emit("ice", { room: roomId, candidate: candidate });
+        }
+      }
+    }
+
+    // Reconnect logic
+    function reconnectIfNeeded() {
+      if (connectionAttempts < MAX_CONNECTION_ATTEMPTS && 
+          pc && 
+          (pc.connectionState === "failed" || pc.connectionState === "disconnected")) {
+        
+        connectionAttempts++;
+        retryCountEl.textContent = `Retry attempt ${connectionAttempts} of ${MAX_CONNECTION_ATTEMPTS}`;
+        
+        console.log(`Reconnection attempt ${connectionAttempts}`);
+        statusEl.textContent = `Reconnecting... (${connectionAttempts}/${MAX_CONNECTION_ATTEMPTS})`;
+        
+        // Create new offer if we're the initiator
+        if (role === "admin") {
+          setTimeout(createAndSendOffer, 1000);
+        }
+      } else if (connectionAttempts >= MAX_CONNECTION_ATTEMPTS) {
+        statusEl.textContent = "Failed to establish connection";
+        connectionStatusEl.textContent = "Please refresh the page or try again";
+      }
+    }
+
+    async function createAndSendOffer() {
+      try {
+        const offer = await pc.createOffer({
+          offerToReceiveAudio: true,
+          offerToReceiveVideo: true,
+          voiceActivityDetection: true
+        });
+        
+        // For Apple Safari
+        if (isAppleDevice) {
+          // Apply codec preferences for Safari
+          offer.sdp = preferCodec(offer.sdp, 'H264');
+        }
+        
+        await pc.setLocalDescription(offer);
+        socket.emit("offer", { room: roomId, offer });
+        console.log("Offer created and sent");
+      } catch (err) {
+        console.error("Error creating offer:", err);
+        setTimeout(createAndSendOffer, 1000);
+      }
+    }
+
+    // Helper function for Safari codec preferences
+    function preferCodec(sdp, codec) {
+      const lines = sdp.split('\n');
+      let mLineIndex = -1;
+      
+      for (let i = 0; i < lines.length; i++) {
+        if (lines[i].startsWith('m=video')) {
+          mLineIndex = i;
+          break;
+        }
+      }
+      
+      if (mLineIndex === -1) return sdp;
+      
+      // Reorder codecs
+      const parts = lines[mLineIndex].split(' ');
+      for (let i = 3; i < parts.length; i++) {
+        if (parts[i] === codec) {
+          // Move preferred codec to front
+          [parts[3], parts[i]] = [parts[i], parts[3]];
+          break;
+        }
+      }
+      
+      lines[mLineIndex] = parts.join(' ');
+      return lines.join('\n');
+    }
+
+    async function joinRoom() {
+      if (!roomId) {
+        statusEl.textContent = "Error: No room ID provided";
+        return;
+      }
+
+      statusEl.textContent = `Joining room: ${roomId}`;
+      
+      // Step 1: Get local media FIRST
+      const mediaSuccess = await getLocalMedia();
+      if (!mediaSuccess) {
+        statusEl.textContent = "Waiting for media permissions...";
+        return;
+      }
+
+      // Step 2: Join the socket.io room
+      socket.emit("join-room", roomId);
+      console.log(`Joined room ${roomId} as ${role}`);
+      
+      // Step 3: Create peer connection AFTER media is ready
+      createPeerConnection();
+      
+      // Step 4: Add tracks to peer connection
+      if (localStream) {
+        localStream.getTracks().forEach(track => {
+          pc.addTrack(track, localStream);
+          console.log(`Added ${track.kind} track to peer connection`);
+        });
+      }
+      
+      // Step 5: Notify server we've joined successfully
+      socket.emit("room-joined", { room: roomId, role: role });
+    }
+
+    // Socket event handlers
+    socket.on("user-joined", async ({ id }) => {
+      console.log("Other user joined:", id);
+      
+      if (role === "admin") {
+        statusEl.textContent = "Customer joined the call";
+      } else {
+        statusEl.textContent = "Support agent joined the call";
+      }
+
+      // Wait a bit to ensure peer connection is ready
+      await new Promise(resolve => setTimeout(resolve, 500));
+      
+      // Create and send offer
+      await createAndSendOffer();
+    });
+
+    socket.on("offer", async (offer) => {
+      console.log("Received offer");
+      
+      // Ensure we have media before handling offer
+      if (!mediaStreamReady) {
+        console.log("Waiting for media before handling offer...");
+        await new Promise(resolve => setTimeout(resolve, 1000));
+      }
+      
+      try {
+        await pc.setRemoteDescription(new RTCSessionDescription(offer));
+        
+        // For Apple Safari - handle special cases
+        if (isAppleDevice && pc.signalingState === 'stable') {
+          // Safari may need explicit addTrack
+          if (localStream) {
+            localStream.getTracks().forEach(track => {
+              if (!pc.getSenders().some(sender => sender.track === track)) {
+                pc.addTrack(track, localStream);
+              }
+            });
+          }
+        }
+        
+        const answer = await pc.createAnswer({
+          voiceActivityDetection: true
+        });
+        
+        // For Apple Safari
+        if (isAppleDevice) {
+          answer.sdp = preferCodec(answer.sdp, 'H264');
+        }
+        
+        await pc.setLocalDescription(answer);
+        socket.emit("answer", { room: roomId, answer });
+        
+        // Send buffered ICE candidates
+        flushIceCandidates();
+      } catch (err) {
+        console.error("Error handling offer:", err);
+        // Retry handling offer
+        setTimeout(() => socket.emit("offer", { room: roomId, offer }), 1000);
+      }
+    });
+
+    socket.on("answer", async (answer) => {
+      console.log("Received answer");
+      try {
+        await pc.setRemoteDescription(new RTCSessionDescription(answer));
+        // Send buffered ICE candidates
+        flushIceCandidates();
+      } catch (err) {
+        console.error("Error handling answer:", err);
+      }
+    });
+
+    socket.on("ice", async (candidate) => {
+      try {
+        if (candidate && pc && pc.remoteDescription) {
+          await pc.addIceCandidate(new RTCIceCandidate(candidate));
+        } else if (candidate) {
+          // Buffer candidate if remote description not set yet
+          iceCandidates.push(candidate);
+        }
+      } catch (err) {
+        console.error("Error adding ICE candidate:", err);
+      }
+    });
+
+    socket.on("connection-timeout", () => {
+      statusEl.textContent = "Connection timeout";
+      connectionStatusEl.textContent = "Please refresh the page and try again";
+      permissionMessage.textContent = "Connection timeout. Please try again.";
+      permissionOverlay.style.display = "flex";
+    });
+
+    socket.on("disconnect", () => {
+      statusEl.textContent = "Disconnected from server";
+      connectionStatusEl.textContent = "Attempting to reconnect...";
+      
+      // Try to reconnect to socket
+      setTimeout(() => {
+        if (!socket.connected) {
+          socket.connect();
+        }
+      }, 2000);
+    });
+
+    socket.on("reconnect", () => {
+      console.log("Reconnected to server");
+      statusEl.textContent = "Reconnected to server";
+      
+      // Rejoin room
+      if (roomId && pc) {
+        socket.emit("join-room", roomId);
+        // Re-send ICE candidates
+        flushIceCandidates();
+      }
+    });
+
+    // Control buttons
+    toggleVideoBtn.onclick = () => {
+      if (!localStream) return;
+      videoEnabled = !videoEnabled;
+      localStream.getVideoTracks().forEach(track => {
+        track.enabled = videoEnabled;
+      });
+      toggleVideoBtn.textContent = videoEnabled ? "Turn Off Camera" : "Turn On Camera";
+      toggleVideoBtn.classList.toggle("inactive", !videoEnabled);
+    };
+
+    toggleAudioBtn.onclick = () => {
+      if (!localStream) return;
+      audioEnabled = !audioEnabled;
+      localStream.getAudioTracks().forEach(track => {
+        track.enabled = audioEnabled;
+      });
+      toggleAudioBtn.textContent = audioEnabled ? "Mute Microphone" : "Unmute Microphone";
+      toggleAudioBtn.classList.toggle("inactive", !audioEnabled);
+    };
+
+    toggleScreenBtn.onclick = async () => {
+      if (screenShareActive) {
+        // Stop screen share
+        screenStream.getTracks().forEach(track => track.stop());
+        localVideo.srcObject = localStream;
+        screenShareActive = false;
+        toggleScreenBtn.textContent = "Share Screen";
+        toggleScreenBtn.classList.remove("inactive");
+      } else {
+        try {
+          screenStream = await navigator.mediaDevices.getDisplayMedia({
+            video: {
+              cursor: "always",
+              displaySurface: "monitor"
+            },
+            audio: true
+          });
+          
+          // Replace video track
+          const videoTrack = screenStream.getVideoTracks()[0];
+          const sender = pc.getSenders().find(s => s.track && s.track.kind === 'video');
+          if (sender) {
+            sender.replaceTrack(videoTrack);
+          }
+          
+          // Update local video display
+          localVideo.srcObject = screenStream;
+          screenShareActive = true;
+          toggleScreenBtn.textContent = "Stop Sharing";
+          toggleScreenBtn.classList.add("inactive");
+          
+          // When screen sharing stops
+          videoTrack.onended = () => {
+            if (screenShareActive) {
+              toggleScreenBtn.click();
+            }
+          };
+        } catch (err) {
+          console.error("Error sharing screen:", err);
+        }
+      }
+    };
+
+    endCallBtn.onclick = () => {
+      if (pc) {
+        pc.close();
+      }
+      if (localStream) {
+        localStream.getTracks().forEach(track => track.stop());
+      }
+      if (screenStream) {
+        screenStream.getTracks().forEach(track => track.stop());
+      }
+      socket.disconnect();
+      
+      // Redirect back to original page or vaama.co
+      const returnUrl = params.get("return_url") || "https://vaama.co";
+      window.location.href = returnUrl;
+    };
+
+    // Permission retry button
+    retryPermissionBtn.onclick = async () => {
+      permissionOverlay.style.display = "none";
+      statusEl.textContent = "Requesting permissions...";
+      const success = await getLocalMedia();
+      if (success && !peerConnectionConfigured) {
+        createPeerConnection();
+      }
+    };
+
+    // Skip permission button (audio only)
+    skipPermissionBtn.onclick = async () => {
+      try {
+        // Try to get audio only
+        localStream = await navigator.mediaDevices.getUserMedia({ 
+          audio: true,
+          video: false 
+        });
+        localVideo.srcObject = null;
+        localLabel.textContent = "Audio Only";
+        videoEnabled = false;
+        toggleVideoBtn.textContent = "Camera Not Available";
+        toggleVideoBtn.disabled = true;
+        toggleVideoBtn.classList.add("inactive");
+        mediaStreamReady = true;
+        permissionOverlay.style.display = "none";
+        
+        if (!peerConnectionConfigured) {
+          createPeerConnection();
+        }
+      } catch (err) {
+        console.error("Failed to get audio only:", err);
+      }
+    };
+
+    // Initialize
+    window.addEventListener("load", () => {
+      if (roomId) {
+        // Show status immediately
+        statusEl.textContent = `In call as ${role === 'admin' ? 'Support Agent' : userName}`;
+        
+        // Start connection process
+        setTimeout(joinRoom, 100); // Small delay to ensure DOM is ready
+      } else {
+        statusEl.textContent = "Error: No room ID provided";
+        connectionStatusEl.textContent = "Please start a call from the main page";
+      }
+    });
+
+    // Handle page refresh/close
+    window.addEventListener("beforeunload", () => {
+      socket.emit("leave-room", roomId);
+      
+      // Get return URL before leaving
+      const returnUrl = params.get("return_url") || "https://vaama.co";
+      // You can also send this to server to notify other party
+    });
+  </script>
+</body>
+</html>
