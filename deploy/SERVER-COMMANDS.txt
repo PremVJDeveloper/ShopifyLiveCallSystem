@@ -1,0 +1,194 @@
+=================================================================
+  VAAMA LIVE — AWS SERVER COMMAND CHEAT SHEET
+  Server IP  : 65.1.246.232
+  HTTPS URL  : https://65-1-246-232.sslip.io
+  Key file   : C:\Users\HP\Downloads\vaama-key.pem
+=================================================================
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  1. SSH INTO THE SERVER
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  # Open PowerShell and run:
+  ssh -i "C:\Users\HP\Downloads\vaama-key.pem" ubuntu@65.1.246.232
+
+  # To exit the server, type:
+  exit
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  2. EDIT .env ON THE SERVER (change passwords, emails, etc.)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  # SSH in first, then run:
+  nano ~/app/.env
+
+  # Inside nano editor:
+  #   Use arrow keys to navigate
+  #   Edit the value you want
+  #   Press Ctrl+O  → Save
+  #   Press Enter   → Confirm filename
+  #   Press Ctrl+X  → Exit
+
+  # After editing .env, ALWAYS restart the app to apply changes:
+  pm2 restart livecall --update-env
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  3. VIEW .env (without editing)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  cat ~/app/.env
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  4. DEPLOY / UPLOAD CODE FROM WINDOWS TO SERVER
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  # Run in PowerShell from your project folder:
+  # (p:\Vaama Projects\VideocallShopify\ShopifyLiveCallSystem)
+
+  # Upload a SINGLE file (example: server.js):
+  scp -i "C:\Users\HP\Downloads\vaama-key.pem" server.js ubuntu@65.1.246.232:/home/ubuntu/app/server.js
+
+  # Upload a SINGLE CSS file (example: video-call.css):
+  scp -i "C:\Users\HP\Downloads\vaama-key.pem" "public\css\video-call.css" ubuntu@65.1.246.232:/home/ubuntu/app/public/css/video-call.css
+
+  # Upload a SINGLE JS file (example: storage.js):
+  scp -i "C:\Users\HP\Downloads\vaama-key.pem" "public\js\utils\storage.js" ubuntu@65.1.246.232:/home/ubuntu/app/public/js/utils/storage.js
+
+  # Upload ENTIRE public folder (all HTML, CSS, JS at once):
+  scp -i "C:\Users\HP\Downloads\vaama-key.pem" -r public ubuntu@65.1.246.232:/home/ubuntu/app/
+
+  # Upload ENTIRE src folder (all backend files):
+  scp -i "C:\Users\HP\Downloads\vaama-key.pem" -r src ubuntu@65.1.246.232:/home/ubuntu/app/
+
+  # After uploading code, restart the app:
+  ssh -i "C:\Users\HP\Downloads\vaama-key.pem" ubuntu@65.1.246.232 "pm2 restart livecall"
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  5. UPLOAD YOUR LOCAL .env.production AS .env ON SERVER
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  # This replaces the server .env with your local .env.production:
+  scp -i "C:\Users\HP\Downloads\vaama-key.pem" .env.production ubuntu@65.1.246.232:/home/ubuntu/app/.env
+
+  # Then restart to apply:
+  ssh -i "C:\Users\HP\Downloads\vaama-key.pem" ubuntu@65.1.246.232 "pm2 restart livecall --update-env"
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  6. APP / PM2 MANAGEMENT (run after SSH-ing in)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  pm2 status                        # Check if app is running
+  pm2 restart livecall              # Restart the app
+  pm2 restart livecall --update-env # Restart AND reload .env changes
+  pm2 stop livecall                 # Stop the app
+  pm2 start livecall                # Start the app (if stopped)
+  pm2 logs livecall                 # View live logs (Ctrl+C to exit)
+  pm2 logs livecall --lines 50      # View last 50 log lines
+  pm2 flush livecall                # Clear all logs
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  7. CHECK IF EVERYTHING IS HEALTHY
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  # Run these after SSH-ing in:
+  pm2 status                        # App status (should say "online")
+  sudo systemctl status nginx       # Nginx status (should say "active")
+  sudo systemctl status coturn      # TURN server status
+  curl http://localhost:3000/health # App health check (JSON response)
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  8. NGINX (web server) COMMANDS (run after SSH-ing in)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  sudo nginx -t                     # Test nginx config for errors
+  sudo systemctl reload nginx       # Apply nginx config changes
+  sudo systemctl restart nginx      # Full restart of nginx
+  sudo cat /etc/nginx/sites-available/livecall  # View nginx config
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  9. CHANGE ADMIN PASSWORD
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  # Step 1: Generate bcrypt hash for your new password (in PowerShell):
+  node -e "require('bcryptjs').hash('YOUR_NEW_PASSWORD', 12).then(console.log)"
+
+  # Step 2: Copy the hash output (starts with $2b$12$...)
+
+  # Step 3: SSH in and edit .env:
+  ssh -i "C:\Users\HP\Downloads\vaama-key.pem" ubuntu@65.1.246.232
+  nano ~/app/.env
+  # Find ADMIN_PASSWORD_HASH= and replace value with new hash
+  # Save: Ctrl+O → Enter → Ctrl+X
+
+  # Step 4: Restart app:
+  pm2 restart livecall --update-env
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  10. VIEW / DOWNLOAD SERVER LOGS TO YOUR PC
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  # Download app output log to your PC (run in PowerShell):
+  scp -i "C:\Users\HP\Downloads\vaama-key.pem" ubuntu@65.1.246.232:/home/ubuntu/app/logs/out.log ".\out.log"
+
+  # Download error log:
+  scp -i "C:\Users\HP\Downloads\vaama-key.pem" ubuntu@65.1.246.232:/home/ubuntu/app/logs/error.log ".\error.log"
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  11. DISK & MEMORY USAGE (run after SSH-ing in)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  df -h /             # Disk usage (how full is the server)
+  free -h             # RAM usage
+  pm2 status          # App memory usage column
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  12. IF SERVER STOPS / REBOOTS (app auto-restarts via PM2)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  # PM2 is configured to auto-start on reboot.
+  # If for some reason the app isn't running after a reboot:
+  ssh -i "C:\Users\HP\Downloads\vaama-key.pem" ubuntu@65.1.246.232
+  pm2 resurrect        # Restore saved PM2 process list
+  pm2 save             # Save current process list for next reboot
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  13. SSL CERTIFICATE (auto-renews, manual check if needed)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  # SSH in, then:
+  sudo certbot renew --dry-run      # Test renewal (cert auto-renews every 90 days)
+  sudo certbot certificates         # View cert expiry date
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  QUICK REFERENCE — .env VARIABLES
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ADMIN_USERNAME          → Login username for /admin
+  ADMIN_PASSWORD_HASH     → bcrypt hash of admin password
+  JWT_SECRET              → Token signing secret (don't change)
+  TURN_URL                → TURN server URL (coturn on this EC2)
+  TURN_USERNAME           → TURN auth username
+  TURN_CREDENTIAL         → TURN auth password (openssl secret)
+  SMTP_HOST               → smtp.gmail.com
+  SMTP_PORT               → 587
+  SMTP_USER               → support@vaama.co
+  SMTP_PASS               → Gmail app password (16 chars)
+  SMTP_FROM               → Display name + email for sent mail
+  ADMIN_EMAIL             → vaamajewellery@gmail.com
+  DEVELOPER_EMAIL         → developer@vaama.co
+
+=================================================================

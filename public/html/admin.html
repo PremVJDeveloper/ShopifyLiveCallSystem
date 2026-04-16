@@ -1,142 +1,163 @@
-<!doctype html>
-<html>
+<!DOCTYPE html>
+<html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <title>Admin Panel - Live Support</title>
-  <link rel="stylesheet" href="/css/admin.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin Dashboard — Vaama Live Support</title>
+  <meta name="description" content="Real-time admin panel for managing live customer support calls." />
+  <link rel="stylesheet" href="/css/admin.css" />
 </head>
 <body>
-  <!-- Permission Request Modal -->
-  <div id="permissionModal" class="permission-modal-overlay" style="display: none;">
-    <div class="permission-modal">
-      <div class="permission-icon">🔔</div>
-      <h2 class="permission-title">Enable Notifications</h2>
-      <p class="permission-description">
-        To ensure you never miss an incoming call, please allow browser notifications. 
-        This will alert you even when you're working in another tab or application.
-      </p>
-      
-      <div class="permission-benefits">
-        <h4>Benefits of enabling notifications:</h4>
-        <ul>
-          <li>Get instant alerts for new call requests</li>
-          <li>Be notified even when working in other tabs</li>
-          <li>Click notifications to instantly accept calls</li>
-          <li>Stay on top of customer support requests</li>
-        </ul>
-      </div>
-      
-      <div class="permission-actions">
-        <button id="allowNotifications" class="permission-btn allow">Allow Notifications</button>
-        <button id="denyNotifications" class="permission-btn deny">Not Now</button>
-      </div>
-      
-      <button id="askLater" class="permission-btn later">Ask me later (I'll enable manually)</button>
-      
-      <p class="permission-note">
-        You can always change notification settings in your browser preferences or using the settings below.
-      </p>
-    </div>
-  </div>
-
-  <!-- Main Admin Panel Content -->
-  <div class="header">
-    <h2>
-      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
-      </svg>
-      Live Support Admin Panel
-    </h2>
-    
-    <div class="status-bar">
-      <div id="connectionStatus" class="status-indicator disconnected">
-        <div class="status-dot"></div>
-        <span id="statusText">Connecting...</span>
-      </div>
-      
-      <div class="status-indicator">
-        <span id="queueCount">0 calls waiting</span>
-        <span id="activeCalls">• 0 active calls</span>
+  <!-- Notification permission modal -->
+  <div id="permissionModal" class="perm-modal-overlay" style="display:none;">
+    <div class="perm-modal">
+      <div class="perm-icon">🔔</div>
+      <h2>Enable Notifications</h2>
+      <p>Get instant alerts for incoming calls, even when you're in another tab.</p>
+      <div class="perm-actions">
+        <button id="allowNotifications" class="btn-allow">Allow Notifications</button>
+        <button id="denyNotifications" class="btn-deny">Not Now</button>
       </div>
     </div>
   </div>
 
-  <!-- Notification Settings -->
-  <div class="notification-settings">
-    <h4>Notification Settings</h4>
-    <div class="setting-item">
-      <label class="switch">
-        <input type="checkbox" id="soundToggle" checked>
-        <span class="slider"></span>
-      </label>
-      <span>Play sound on new call</span>
-      <button class="test-notification-btn" id="testSoundBtn">Test Sound</button>
-    </div>
-    
-    <div class="setting-item">
-      <label class="switch">
-        <input type="checkbox" id="desktopNotificationToggle" checked>
-        <span class="slider"></span>
-      </label>
-      <span>Show desktop notifications</span>
-      <button class="test-notification-btn" id="testNotificationBtn">Test Notification</button>
-      <span id="notificationStatus" style="font-size: 12px; color: #666; margin-left: 10px;"></span>
-    </div>
-    
-    <div class="setting-item">
-      <label class="switch">
-        <input type="checkbox" id="browserTabNotificationToggle" checked>
-        <span class="slider"></span>
-      </label>
-      <span>Show browser tab notifications</span>
-    </div>
-    
-    <div style="margin-top: 15px; padding-top: 15px; border-top: 1px solid #eee;">
-      <button id="managePermissionsBtn" class="test-notification-btn" style="background: #9C27B0;">Manage Browser Permissions</button>
-      <span style="font-size: 12px; color: #888; margin-left: 10px;">Click to open browser notification settings</span>
-    </div>
+  <div class="admin-layout">
+    <!-- Sidebar -->
+    <aside class="admin-sidebar">
+      <div class="sidebar-logo">
+        <h1>Vaama Live</h1>
+        <p>Support Dashboard</p>
+      </div>
+      <nav class="sidebar-nav">
+        <div class="nav-item active">
+          <span class="nav-icon">📞</span>
+          <span>Queue</span>
+        </div>
+        <div class="nav-item">
+          <span class="nav-icon">🔴</span>
+          <span>Active Calls</span>
+        </div>
+        <div class="nav-item">
+          <span class="nav-icon">📋</span>
+          <span>History</span>
+        </div>
+        <div class="nav-item">
+          <span class="nav-icon">⚙️</span>
+          <span>Settings</span>
+        </div>
+      </nav>
+      <div class="sidebar-footer">
+        <button class="logout-btn" id="logoutBtn">Sign Out</button>
+      </div>
+    </aside>
+
+    <!-- Main content -->
+    <main class="admin-main">
+      <!-- Header -->
+      <div class="admin-header">
+        <h2>Live Support Dashboard</h2>
+        <div class="header-status">
+          <div class="status-pill">
+            <div id="connectionDot" class="status-dot offline"></div>
+            <span id="statusText">Connecting…</span>
+          </div>
+          <div class="status-pill">
+            <span id="queueCount">0 waiting</span>
+            <span id="activeCalls">· 0 active</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Stats -->
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-label">Waiting</div>
+          <div class="stat-number orange" id="waitingCallsCount">0</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Active Calls</div>
+          <div class="stat-number green" id="activeCallsCount">0</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Today's Calls</div>
+          <div class="stat-number accent" id="totalCallsToday">0</div>
+        </div>
+      </div>
+
+      <!-- Content grid: queue + sidebar panels -->
+      <div class="content-grid">
+        <!-- Left: queue + active -->
+        <div style="display:flex; flex-direction:column; gap:16px;">
+          <!-- Incoming queue -->
+          <div class="section-card">
+            <div class="section-header">
+              <span class="section-title">📞 Incoming calls</span>
+              <span class="section-badge" id="queueBadge">0</span>
+            </div>
+            <div class="section-body">
+              <div id="emptyQueue" class="empty-state">
+                <div class="empty-icon">📭</div>
+                <p>No incoming calls right now</p>
+                <p style="font-size:12px;">New calls will appear here instantly</p>
+              </div>
+              <ul id="callList" style="list-style:none; padding:0;"></ul>
+            </div>
+          </div>
+
+          <!-- Active rooms -->
+          <div class="section-card">
+            <div class="section-header">
+              <span class="section-title">🔴 Active calls</span>
+            </div>
+            <div class="section-body">
+              <div id="activeRoomsList"></div>
+            </div>
+          </div>
+
+          <!-- Call history -->
+          <div class="section-card" id="historySection" style="display:none;">
+            <div class="section-header">
+              <span class="section-title">📋 Recent history</span>
+            </div>
+            <div class="section-body">
+              <div id="historyList"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right: settings -->
+        <div style="display:flex; flex-direction:column; gap:16px;">
+          <div class="settings-card">
+            <div class="settings-header">🔔 Notification Settings</div>
+
+            <div class="setting-item">
+              <label class="switch">
+                <input type="checkbox" id="soundToggle" checked />
+                <span class="slider"></span>
+              </label>
+              <span class="setting-label">Sound on new call</span>
+              <button class="test-btn" id="testSoundBtn">Test</button>
+            </div>
+
+            <div class="setting-item">
+              <label class="switch">
+                <input type="checkbox" id="desktopNotificationToggle" checked />
+                <span class="slider"></span>
+              </label>
+              <span class="setting-label">Desktop notifications</span>
+              <span id="notificationStatus" style="font-size:11px; color:#666;"></span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
   </div>
 
-  <!-- Stats Dashboard -->
-  <div class="stats">
-    <div class="stat-card">
-      <div class="stat-number" id="waitingCallsCount">0</div>
-      <div class="stat-label">Waiting Calls</div>
-    </div>
-    <div class="stat-card">
-      <div class="stat-number" id="activeCallsCount">0</div>
-      <div class="stat-label">Active Calls</div>
-    </div>
-    <div class="stat-card">
-      <div class="stat-number" id="totalCallsToday">0</div>
-      <div class="stat-label">Today's Calls</div>
-    </div>
-  </div>
-
-  <!-- Incoming Calls Section -->
-  <h3>Incoming Calls</h3>
-  <div id="emptyQueue" class="empty-queue" style="display: none;">
-    <div class="empty-icon">📞</div>
-    <p>No incoming calls at the moment.</p>
-    <p style="font-size: 14px; color: #aaa;">When a new call comes in, you'll see it here with notifications.</p>
-  </div>
-  
-  <ul id="callList" style="list-style: none; padding: 0;"></ul>
-
-  <!-- Call History (Optional) -->
-  <div class="call-history" style="display: none;" id="callHistorySection">
-    <h4>Recent Call History</h4>
-    <div id="callHistory"></div>
-  </div>
-
-  <!-- Audio element for notification sounds -->
   <audio id="notificationSound" preload="auto">
-    <source src="/sounds/notification.mp3" type="audio/mpeg">
+    <source src="/sounds/notification.mp3" type="audio/mpeg" />
   </audio>
 
   <script src="https://cdn.socket.io/4.6.1/socket.io.min.js"></script>
-  <script src="/js/admin.js"></script>
-
-  
+  <script type="module" src="/js/pages/admin.js"></script>
 </body>
 </html>

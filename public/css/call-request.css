@@ -1,0 +1,115 @@
+/* call-request.css — Waiting room page */
+@import url('./base.css');
+
+body {
+  min-height: 100vh;
+  display: flex; align-items: center; justify-content: center;
+  padding: 20px;
+  background: radial-gradient(ellipse at 30% 20%, rgba(124,58,237,0.12) 0%, transparent 60%),
+              radial-gradient(ellipse at 70% 80%, rgba(6,182,212,0.08) 0%, transparent 60%),
+              var(--bg-deep);
+}
+
+.waiting-container {
+  width: 100%; max-width: 460px;
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  backdrop-filter: var(--glass-blur);
+  border-radius: var(--radius-xl);
+  padding: 48px 40px;
+  text-align: center;
+  animation: fadeIn 0.4s ease;
+  box-shadow: var(--shadow-lg), var(--shadow-accent);
+}
+
+.brand {
+  margin-bottom: 32px;
+}
+.brand-logo {
+  font-size: 28px; margin-bottom: 8px;
+}
+.brand h1 {
+  font-size: 22px; font-weight: 700; color: var(--text-primary);
+  margin-bottom: 4px;
+}
+.brand p { font-size: 13px; color: var(--text-muted); }
+
+/* Animated ring */
+.connecting-ring {
+  position: relative;
+  width: 90px; height: 90px;
+  margin: 0 auto 28px;
+}
+.ring {
+  position: absolute; inset: 0;
+  border-radius: 50%;
+  border: 3px solid transparent;
+  animation: spin 1.4s cubic-bezier(0.5,0,0.5,1) infinite;
+}
+.ring:nth-child(1) { border-top-color: var(--accent); animation-delay: -0.45s; }
+.ring:nth-child(2) { border-top-color: var(--accent-cyan); animation-delay: -0.3s; inset: 8px; }
+.ring:nth-child(3) { border-top-color: rgba(124,58,237,0.4); animation-delay: -0.15s; inset: 16px; }
+.ring-center {
+  position: absolute; inset: 30px;
+  background: linear-gradient(135deg, var(--accent), var(--accent-cyan));
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px;
+}
+
+#status {
+  font-size: 18px; font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 8px;
+}
+#message {
+  font-size: 13px; color: var(--text-secondary);
+  margin-bottom: 24px; line-height: 1.6;
+}
+
+/* Queue position indicator */
+.queue-pos-wrap {
+  display: none;
+  align-items: center; justify-content: center; gap: 10px;
+  background: rgba(124,58,237,0.1);
+  border: 1px solid rgba(124,58,237,0.2);
+  border-radius: var(--radius-full);
+  padding: 8px 20px;
+  margin-bottom: 20px;
+  font-size: 13px; color: var(--accent-light);
+}
+.queue-pos-wrap.visible { display: flex; }
+#queuePosition { font-size: 20px; font-weight: 700; color: var(--accent); }
+
+/* User info card */
+.user-info-card {
+  background: rgba(255,255,255,0.03);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 16px 18px;
+  text-align: left;
+  margin-bottom: 24px;
+  display: none;
+}
+.user-info-card.visible { display: block; }
+.user-info-card p { font-size: 12px; color: var(--text-secondary); margin: 5px 0; }
+.user-info-card strong { color: var(--text-primary); }
+
+/* Cancel button */
+.cancel-btn {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 11px 28px;
+  background: rgba(239,68,68,0.1);
+  border: 1px solid rgba(239,68,68,0.25);
+  color: var(--red);
+  border-radius: var(--radius-full);
+  font-size: 14px; font-weight: 600;
+  cursor: pointer; transition: var(--transition);
+}
+.cancel-btn:hover { background: rgba(239,68,68,0.2); transform: translateY(-1px); }
+
+/* Estimated wait */
+.wait-info {
+  font-size: 11px; color: var(--text-muted);
+  margin-top: 16px;
+}

@@ -1,0 +1,774 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>iJewel3D Ring Try-On Demo</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            color: white;
+        }
+
+        header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .demo-card {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+            margin-bottom: 30px;
+        }
+
+        /* Viewer Container */
+        #ijewel3d-tryon-container {
+            position: relative;
+            width: 100%;
+            height: 500px;
+            background: #1a1a1a;
+        }
+
+        #header-text {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            z-index: 10;
+            color: white;
+            font-weight: bold;
+            background: rgba(0,0,0,0.5);
+            padding: 8px 16px;
+            border-radius: 20px;
+            display: none;
+        }
+
+        #webgi-canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            outline: none;
+        }
+
+        /* Controls */
+        .controls {
+            padding: 30px;
+            background: #f8f9fa;
+            border-top: 1px solid #e9ecef;
+        }
+
+        .controls-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .btn {
+            padding: 15px 25px;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #5a6268;
+            transform: translateY(-2px);
+        }
+
+        .btn-danger {
+            background: #dc3545;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #c82333;
+            transform: translateY(-2px);
+        }
+
+        .btn-success {
+            background: #28a745;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #218838;
+            transform: translateY(-2px);
+        }
+
+        .btn-icon {
+            font-size: 20px;
+        }
+
+        /* Model Selector */
+        .model-selector {
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+        }
+
+        .model-selector h3 {
+            margin-bottom: 15px;
+            color: #333;
+        }
+
+        .model-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .model-btn {
+            padding: 10px 20px;
+            background: #e9ecef;
+            border: 2px solid transparent;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .model-btn:hover {
+            background: #dee2e6;
+        }
+
+        .model-btn.active {
+            background: #667eea;
+            color: white;
+            border-color: #764ba2;
+        }
+
+        /* Instructions */
+        .instructions {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            margin-top: 30px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+        }
+
+        .instructions h3 {
+            color: #333;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .instructions ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .instructions li {
+            padding: 10px 0;
+            border-bottom: 1px solid #f1f1f1;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .instructions li:last-child {
+            border-bottom: none;
+        }
+
+        .instruction-icon {
+            color: #667eea;
+            font-size: 20px;
+        }
+
+        /* Status */
+        .status {
+            text-align: center;
+            padding: 15px;
+            background: #e7f4ff;
+            border-radius: 10px;
+            margin-top: 20px;
+            display: none;
+        }
+
+        .status.active {
+            display: block;
+        }
+
+        .status.loading {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .status.error {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .status.success {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        /* Loading Spinner */
+        .spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255,255,255,.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .controls-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            #ijewel3d-tryon-container {
+                height: 400px;
+            }
+            
+            header h1 {
+                font-size: 2rem;
+            }
+        }
+
+        /* Debug Panel */
+        .debug-panel {
+            background: #2d3748;
+            color: #e2e8f0;
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 20px;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            display: none;
+        }
+
+        .debug-toggle {
+            color: #667eea;
+            text-decoration: underline;
+            cursor: pointer;
+            margin-top: 10px;
+            display: inline-block;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>💍 iJewel3D Ring Try-On Demo</h1>
+            <p>Experience virtual ring try-on with your camera</p>
+        </header>
+
+        <div class="demo-card">
+            <!-- 3D Viewer Container -->
+            <div id="ijewel3d-tryon-container">
+                <div id="header-text">iJewel Realtime Try-On Active</div>
+                <canvas id="webgi-canvas"></canvas>
+            </div>
+
+            <!-- Model Selector -->
+            <div class="model-selector">
+                <h3>Select Ring Model</h3>
+                <div class="model-buttons" id="model-buttons">
+                    <!-- Buttons will be added by JavaScript -->
+                </div>
+            </div>
+
+            <!-- Controls -->
+            <div class="controls">
+                <div class="controls-grid">
+                    <button id="start-ar" class="btn btn-primary">
+                        <span class="btn-icon">📱</span>
+                        Start Try-On
+                    </button>
+                    <button id="flip-camera" class="btn btn-secondary">
+                        <span class="btn-icon">🔄</span>
+                        Flip Camera
+                    </button>
+                    <button id="save-image" class="btn btn-success">
+                        <span class="btn-icon">📸</span>
+                        Save Image
+                    </button>
+                    <button id="stop-ar" class="btn btn-danger">
+                        <span class="btn-icon">❌</span>
+                        Exit Try-On
+                    </button>
+                </div>
+
+                <!-- Status Messages -->
+                <div id="status" class="status"></div>
+
+                <!-- Debug Panel Toggle -->
+                <div class="debug-toggle" id="debug-toggle">Show Debug Info</div>
+                <div class="debug-panel" id="debug-panel">
+                    <div id="debug-info"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Instructions -->
+        <div class="instructions">
+            <h3><span class="instruction-icon">📋</span> How to Use</h3>
+            <ul>
+                <li><span class="instruction-icon">1️⃣</span> Click "Start Try-On" to activate your camera</li>
+                <li><span class="instruction-icon">👆</span> Allow camera permissions when prompted</li>
+                <li><span class="instruction-icon">💍</span> Hold your hand up to try on the ring</li>
+                <li><span class="instruction-icon">📱</span> Use "Flip Camera" to switch between front/back cameras</li>
+                <li><span class="instruction-icon">📸</span> Click "Save Image" to capture a screenshot</li>
+                <li><span class="instruction-icon">❌</span> Click "Exit Try-On" to return to 3D view</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Debug Console (Optional) -->
+    <script>
+        ;(function () {
+            var src = '//cdn.jsdelivr.net/npm/eruda';
+            if (localStorage.getItem('debug-mode') === 'true') {
+                var script1 = document.createElement('script');
+                script1.src = src;
+                document.head.appendChild(script1);
+                
+                var script2 = document.createElement('script');
+                script2.innerHTML = 'eruda.init();';
+                document.head.appendChild(script2);
+            }
+        })();
+    </script>
+
+    <!-- iJewel3D SDK Scripts -->
+    <script>
+        // Make webgi globally available for ij_vto
+        window.webgi = window;
+    </script>
+    <script src="https://releases.ijewel3d.com/webgi/runtime/bundle-0.15.0.js"></script>
+    <script src="https://releases.ijewel3d.com/libs/web-vto/0.0.36/web-vto.js"></script>
+
+    <!-- Main Application Script -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Configuration
+            const CONFIG = {
+                models: [
+                    {
+                        id: 'engagement-ring',
+                        name: 'Engagement Ring',
+                        modelUrl: 'https://cdn.shopify.com/3d/models/d4c8b2f40304b8b9/scene.glb',
+                        settingsUrl: 'https://cdn.shopify.com/s/files/1/0634/8239/6854/files/scene_1.vjson'
+                    },
+                    // {
+                    //     id: 'wedding-band',
+                    //     name: 'Wedding Band',
+                    //     modelUrl: 'https://releases.ijewel3d.com/libs/web-vto/0.0.36/assets/models/wedding.glb',
+                    //     settingsUrl: 'https://releases.ijewel3d.com/libs/web-vto/0.0.36/assets/models/wedding.glb.json'
+                    // },
+                    // {
+                    //     id: 'diamond-ring',
+                    //     name: 'Diamond Ring',
+                    //     modelUrl: 'https://releases.ijewel3d.com/libs/web-vto/0.0.36/assets/models/solitaire.glb',
+                    //     settingsUrl: 'https://releases.ijewel3d.com/libs/web-vto/0.0.36/assets/models/solitaire.glb.json'
+                    // }
+                ],
+                environmentMap: 'https://playground.ijewel3d.com/assets/lightmaps/gem/gem-2.exr'
+            };
+
+            // Application State
+            let viewer = null;
+            let tryon = null;
+            let currentModel = null;
+            let isARMode = false;
+            let isInitialized = false;
+
+            // DOM Elements
+            const elements = {
+                container: document.getElementById('ijewel3d-tryon-container'),
+                canvas: document.getElementById('webgi-canvas'),
+                headerText: document.getElementById('header-text'),
+                startArBtn: document.getElementById('start-ar'),
+                flipCameraBtn: document.getElementById('flip-camera'),
+                saveImageBtn: document.getElementById('save-image'),
+                stopArBtn: document.getElementById('stop-ar'),
+                modelButtons: document.getElementById('model-buttons'),
+                status: document.getElementById('status'),
+                debugPanel: document.getElementById('debug-panel'),
+                debugInfo: document.getElementById('debug-info'),
+                debugToggle: document.getElementById('debug-toggle')
+            };
+
+            // Initialize the application
+            async function initialize() {
+                showStatus('Initializing iJewel3D Viewer...', 'loading');
+                
+                try {
+                    // Create model buttons
+                    createModelButtons();
+                    
+                    // Initialize viewer
+                    await initializeViewer();
+                    
+                    // Load first model
+                    await loadModel(CONFIG.models[0]);
+                    
+                    isInitialized = true;
+                    showStatus('Ready! Click "Start Try-On" to begin.', 'success');
+                    
+                    // Setup event listeners
+                    setupEventListeners();
+                    
+                    // Update debug info
+                    updateDebugInfo();
+                    
+                } catch (error) {
+                    console.error('Initialization error:', error);
+                    showStatus(`Initialization failed: ${error.message}`, 'error');
+                }
+            }
+
+            // Initialize the 3D viewer
+            async function initializeViewer() {
+                try {
+                    // Create viewer instance
+                    viewer = new webgi.ViewerApp({
+                        canvas: elements.canvas,
+                        useRgbm: false,
+                        toneMapping: webgi.EToneMapping.ACES,
+                        physicallyCorrectLights: true
+                    });
+                    
+                    viewer.renderer.displayCanvasScaling = 2;
+                    
+                    // Add base plugins
+                    await webgi.addBasePlugins(viewer, {
+                        interactionPrompt: true,
+                        interactionPromptThreshold: 0.5
+                    });
+                    
+                    // Add Ring TryOn Plugin
+                    tryon = await viewer.addPlugin(ij_vto.RingTryonPlugin);
+                    
+                    // Setup camera and controls for normal view
+                    await viewer.setEnvironmentMap(CONFIG.environmentMap);
+                    
+                    // Configure viewer for normal mode
+                    configureViewerMode('normal');
+                    
+                    console.log('Viewer initialized successfully');
+                    
+                } catch (error) {
+                    throw new Error(`Failed to initialize viewer: ${error.message}`);
+                }
+            }
+
+            // Load a 3D model
+            async function loadModel(modelConfig) {
+                if (!viewer) return;
+                
+                showStatus(`Loading ${modelConfig.name}...`, 'loading');
+                
+                try {
+                    // Clear existing model
+                    await viewer.unload();
+                    
+                    // Load new model and settings
+                    await viewer.load(modelConfig.modelUrl);
+                    await viewer.load(modelConfig.settingsUrl);
+                    
+                    currentModel = modelConfig;
+                    
+                    // Update UI
+                    updateModelButtons(modelConfig.id);
+                    
+                    showStatus(`${modelConfig.name} loaded successfully`, 'success');
+                    
+                    // Update debug info
+                    updateDebugInfo();
+                    
+                } catch (error) {
+                    console.error('Error loading model:', error);
+                    showStatus(`Failed to load model: ${error.message}`, 'error');
+                }
+            }
+
+            // Start AR mode
+            async function startAR() {
+                if (!tryon || !currentModel) {
+                    showStatus('Try-On not ready. Please select a model first.', 'error');
+                    return;
+                }
+                
+                try {
+                    showStatus('Starting camera...', 'loading');
+                    
+                    // Start AR
+                    await tryon.start();
+                    
+                    isARMode = true;
+                    
+                    // Update UI
+                    updateUIMode('ar');
+                    
+                    showStatus('Try-On active! Show your hand to the camera.', 'success');
+                    
+                    // Update debug info
+                    updateDebugInfo();
+                    
+                } catch (error) {
+                    console.error('Error starting AR:', error);
+                    
+                    if (error.name === 'NotAllowedError') {
+                        showStatus('Camera access denied. Please allow camera permissions.', 'error');
+                    } else if (error.name === 'NotFoundError') {
+                        showStatus('No camera found on this device.', 'error');
+                    } else {
+                        showStatus(`Failed to start Try-On: ${error.message}`, 'error');
+                    }
+                    
+                    stopAR();
+                }
+            }
+
+            // Stop AR mode
+            function stopAR() {
+                if (!tryon || !isARMode) return;
+                
+                try {
+                    tryon.stop();
+                    
+                    isARMode = false;
+                    
+                    // Update UI
+                    updateUIMode('normal');
+                    
+                    showStatus('Try-On stopped. Back to 3D view.', 'success');
+                    
+                    // Update debug info
+                    updateDebugInfo();
+                    
+                } catch (error) {
+                    console.error('Error stopping AR:', error);
+                    showStatus('Error stopping Try-On', 'error');
+                }
+            }
+
+            // Flip camera
+            function flipCamera() {
+                if (!tryon || !isARMode) return;
+                
+                try {
+                    tryon.flipCamera();
+                    showStatus('Camera flipped', 'success');
+                } catch (error) {
+                    console.error('Error flipping camera:', error);
+                }
+            }
+
+            // Save image
+            function saveImage() {
+                if (!tryon || !isARMode) return;
+                
+                try {
+                    tryon.saveImage();
+                    showStatus('Image saved to downloads', 'success');
+                } catch (error) {
+                    console.error('Error saving image:', error);
+                    showStatus('Failed to save image', 'error');
+                }
+            }
+
+            // Configure viewer mode
+            function configureViewerMode(mode) {
+                if (!viewer) return;
+                
+                if (mode === 'ar') {
+                    // Disable controls during AR
+                    viewer.setControlsOptions({
+                        enableZoom: false,
+                        enablePan: false,
+                        enableRotate: false,
+                        autoRotate: false
+                    });
+                } else {
+                    // Enable controls for normal view
+                    viewer.setControlsOptions({
+                        enableZoom: true,
+                        enablePan: true,
+                        enableRotate: true,
+                        autoRotate: true,
+                        autoRotateSpeed: 0.5
+                    });
+                }
+            }
+
+            // Create model selection buttons
+            function createModelButtons() {
+                CONFIG.models.forEach(model => {
+                    const button = document.createElement('button');
+                    button.className = 'model-btn';
+                    button.dataset.modelId = model.id;
+                    button.textContent = model.name;
+                    button.onclick = () => loadModel(model);
+                    elements.modelButtons.appendChild(button);
+                });
+            }
+
+            // Update active model button
+            function updateModelButtons(activeId) {
+                document.querySelectorAll('.model-btn').forEach(btn => {
+                    if (btn.dataset.modelId === activeId) {
+                        btn.classList.add('active');
+                    } else {
+                        btn.classList.remove('active');
+                    }
+                });
+            }
+
+            // Update UI based on mode
+            function updateUIMode(mode) {
+                if (mode === 'ar') {
+                    elements.headerText.style.display = 'block';
+                    elements.startArBtn.style.display = 'none';
+                    elements.flipCameraBtn.style.display = 'flex';
+                    elements.saveImageBtn.style.display = 'flex';
+                    elements.stopArBtn.style.display = 'flex';
+                    configureViewerMode('ar');
+                } else {
+                    elements.headerText.style.display = 'none';
+                    elements.startArBtn.style.display = 'flex';
+                    elements.flipCameraBtn.style.display = 'none';
+                    elements.saveImageBtn.style.display = 'none';
+                    elements.stopArBtn.style.display = 'none';
+                    configureViewerMode('normal');
+                }
+            }
+
+            // Show status message
+            function showStatus(message, type = 'info') {
+                elements.status.textContent = message;
+                elements.status.className = `status active ${type}`;
+                
+                // Auto-hide success messages after 3 seconds
+                if (type === 'success') {
+                    setTimeout(() => {
+                        elements.status.classList.remove('active');
+                    }, 3000);
+                }
+            }
+
+            // Update debug information
+            function updateDebugInfo() {
+                const info = `
+                    Viewer: ${viewer ? 'Initialized' : 'Not initialized'}
+                    TryOn Plugin: ${tryon ? 'Loaded' : 'Not loaded'}
+                    Current Model: ${currentModel ? currentModel.name : 'None'}
+                    AR Mode: ${isARMode ? 'Active' : 'Inactive'}
+                    WebGL: ${viewer?.renderer?.isWebGL2 ? 'WebGL2' : 'WebGL1'}
+                `;
+                elements.debugInfo.textContent = info;
+            }
+
+            // Setup event listeners
+            function setupEventListeners() {
+                // Button event listeners
+                elements.startArBtn.addEventListener('click', startAR);
+                elements.flipCameraBtn.addEventListener('click', flipCamera);
+                elements.saveImageBtn.addEventListener('click', saveImage);
+                elements.stopArBtn.addEventListener('click', stopAR);
+                
+                // Debug toggle
+                elements.debugToggle.addEventListener('click', () => {
+                    const isVisible = elements.debugPanel.style.display === 'block';
+                    elements.debugPanel.style.display = isVisible ? 'none' : 'block';
+                    elements.debugToggle.textContent = isVisible ? 'Show Debug Info' : 'Hide Debug Info';
+                });
+                
+                // Handle page visibility
+                document.addEventListener('visibilitychange', () => {
+                    if (document.hidden && isARMode && tryon) {
+                        tryon.pause();
+                    } else if (!document.hidden && isARMode && tryon) {
+                        tryon.resume();
+                    }
+                });
+                
+                // Handle window resize
+                window.addEventListener('resize', () => {
+                    if (viewer && elements.container) {
+                        const width = elements.container.clientWidth;
+                        const height = elements.container.clientHeight;
+                        viewer.setSize(width, height);
+                    }
+                });
+                
+                // Enable debug mode with Shift+D
+                document.addEventListener('keydown', (e) => {
+                    if (e.shiftKey && e.key === 'D') {
+                        localStorage.setItem('debug-mode', 
+                            localStorage.getItem('debug-mode') === 'true' ? 'false' : 'true'
+                        );
+                        location.reload();
+                    }
+                });
+            }
+
+            // Initialize the application
+            initialize();
+        });
+    </script>
+</body>
+</html>

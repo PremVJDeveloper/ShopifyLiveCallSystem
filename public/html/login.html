@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin Login — Live Support</title>
+  <meta name="description" content="Admin login for Vaama Live Support system" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+    :root {
+      --bg:       #0d0d14;
+      --surface:  #13131f;
+      --border:   rgba(255,255,255,0.08);
+      --accent:   #7c3aed;
+      --accent-l: #9d5dff;
+      --cyan:     #06b6d4;
+      --text:     #f1f5f9;
+      --muted:    #94a3b8;
+      --red:      #ef4444;
+      --radius:   14px;
+      --shadow:   0 8px 40px rgba(0,0,0,0.5);
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Inter', sans-serif;
+      background: radial-gradient(ellipse at 25% 30%, rgba(124,58,237,0.15) 0%, transparent 55%),
+                  radial-gradient(ellipse at 75% 70%, rgba(6,182,212,0.1) 0%, transparent 55%),
+                  var(--bg);
+      min-height: 100vh;
+      display: flex; align-items: center; justify-content: center;
+      padding: 20px;
+      color: var(--text);
+    }
+    .login-card {
+      background: rgba(255,255,255,0.04);
+      border: 1px solid var(--border);
+      backdrop-filter: blur(20px);
+      border-radius: 24px;
+      padding: 48px 40px;
+      width: 100%; max-width: 400px;
+      box-shadow: var(--shadow), 0 0 30px rgba(124,58,237,0.2);
+      animation: fadeIn 0.4s ease;
+    }
+    @keyframes fadeIn { from { opacity:0; transform:translateY(12px); } to { opacity:1; transform:translateY(0); } }
+    .login-logo { text-align: center; margin-bottom: 32px; }
+    .login-logo .icon { font-size: 40px; margin-bottom: 10px; }
+    .login-logo h1 { font-size: 22px; font-weight: 700;
+      background: linear-gradient(135deg, var(--accent-l), var(--cyan));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    }
+    .login-logo p { font-size: 13px; color: var(--muted); margin-top: 4px; }
+    .form-group { margin-bottom: 18px; }
+    label { display: block; font-size: 12px; font-weight: 600;
+      color: var(--muted); text-transform: uppercase; letter-spacing: 0.6px; margin-bottom: 7px; }
+    input {
+      width: 100%; padding: 11px 14px;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      color: var(--text); font-size: 14px; font-family: inherit;
+      outline: none; transition: 0.2s ease;
+    }
+    input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(124,58,237,0.2); }
+    .error-msg {
+      background: rgba(239,68,68,0.1);
+      border: 1px solid rgba(239,68,68,0.25);
+      border-radius: 8px;
+      padding: 10px 14px;
+      font-size: 13px;
+      color: var(--red);
+      margin-bottom: 18px;
+      display: none;
+    }
+    .submit-btn {
+      width: 100%; padding: 13px;
+      background: linear-gradient(135deg, var(--accent), #5b21b6);
+      color: #fff; border: none; border-radius: 10px;
+      font-size: 15px; font-weight: 600; cursor: pointer;
+      font-family: inherit;
+      transition: 0.2s ease;
+      box-shadow: 0 4px 14px rgba(124,58,237,0.35);
+    }
+    .submit-btn:hover:not(:disabled) { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(124,58,237,0.5); }
+    .submit-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+    .dev-hint {
+      margin-top: 24px;
+      background: rgba(6,182,212,0.07);
+      border: 1px solid rgba(6,182,212,0.15);
+      border-radius: 8px;
+      padding: 12px 14px;
+      font-size: 11px; color: var(--muted); line-height: 1.6;
+    }
+    .dev-hint code { color: var(--cyan); font-family: monospace; }
+  </style>
+</head>
+<body>
+  <div class="login-card">
+    <div class="login-logo">
+      <div class="icon">🛡️</div>
+      <h1>Admin Login</h1>
+      <p>Vaama Live Support System</p>
+    </div>
+
+    <form id="loginForm" novalidate>
+      <div class="form-group">
+        <label for="username">Username</label>
+        <input type="text" id="username" name="username" placeholder="admin" autocomplete="username" required />
+      </div>
+      <div class="form-group">
+        <label for="password">Password</label>
+        <input type="password" id="password" name="password" placeholder="••••••••" autocomplete="current-password" required />
+      </div>
+
+      <div class="error-msg" id="errorMsg"></div>
+
+      <button type="submit" class="submit-btn" id="submitBtn">Sign In →</button>
+    </form>
+
+    <div class="dev-hint">
+      <strong>First time?</strong> In development mode, use username <code>admin</code> and password <code>admin</code>.
+      Set <code>ADMIN_PASSWORD_HASH</code> in your <code>.env</code> for production.
+    </div>
+  </div>
+
+  <script src="https://cdn.socket.io/4.6.1/socket.io.min.js"></script>
+  <script type="module" src="/js/pages/login.js"></script>
+</body>
+</html>

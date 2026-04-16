@@ -13,6 +13,10 @@ pnpm-debug.log*
 .env
 .env.local
 .env.*.local
+.env.production
+
+# App data (SQLite database)
+data/
 
 # Build output
 dist/

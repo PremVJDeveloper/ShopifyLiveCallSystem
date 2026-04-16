@@ -1,47 +1,149 @@
 <!doctype html>
-<html>
+<html lang="en">
 <head>
   <meta charset="utf-8" />
-  <title>Live Support - Start</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      max-width: 600px;
-      margin: 50px auto;
-      padding: 20px;
-      text-align: center;
-    }
-    button {
-      background-color: #4CAF50;
-      color: white;
-      padding: 15px 32px;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
-      font-size: 16px;
-      margin-top: 20px;
-    }
-    button:hover {
-      background-color: #45a049;
-    }
-  </style>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Vaama Live — Live Jewellery Consultation</title>
+  <meta name="description" content="Connect with a Vaama jewellery expert via live video call. Get personalised advice instantly or schedule for a convenient time." />
+  <link rel="stylesheet" href="/css/index.css" />
 </head>
 <body>
-  <h1>Welcome to Live Support</h1>
-  <p>Click to start a live video call with support agent.</p>
-  
-  <div style="margin: 30px 0;">
-    <label for="userName">Your Name:</label>
-    <input type="text" id="userName" placeholder="Enter your name" value="Guest">
-  </div>
-  
-  <button id="startCall">Start Live Video Call</button>
+  <div class="page-wrapper">
 
-  <script>
-    document.getElementById("startCall").addEventListener("click", () => {
-      const userName = document.getElementById("userName").value || "Guest";
-      window.location.href = `/call-request?name=${encodeURIComponent(userName)}`;
-    });
-  </script>
+    <!-- Header -->
+    <header class="page-header">
+      <div class="brand-badge">
+        <span class="dot"></span>
+        Vaama Live Support
+      </div>
+      <h1>Talk to a Jewellery Expert</h1>
+      <p>Get live personalised advice on our collections — instantly or scheduled at your convenience.</p>
+    </header>
+
+    <!-- Main form card -->
+    <div class="card" id="mainCard">
+
+      <!-- Name + Phone -->
+      <div class="field-row">
+        <div class="field">
+          <label for="userName">Your Name</label>
+          <input id="userName" class="input" type="text" placeholder="e.g. Priya Sharma" autocomplete="name" />
+          <div class="field-error" id="nameError">Please enter your name</div>
+        </div>
+        <div class="field">
+          <label for="userPhone">Phone Number</label>
+          <input id="userPhone" class="input" type="tel" placeholder="+91 98765 43210" autocomplete="tel" />
+        </div>
+      </div>
+
+      <!-- What are you looking for? -->
+      <div class="field">
+        <label for="lookingFor">What are you looking for?</label>
+        <select id="lookingFor" class="input">
+          <option value="">— Select a category —</option>
+          <option value="Rings">💍 Rings</option>
+          <option value="Pendant">📿 Pendant</option>
+          <option value="Earrings">✨ Earrings</option>
+          <option value="MangalSutras">🪢 MangalSutras</option>
+          <option value="Necklaces">💎 Necklaces</option>
+          <option value="Other">🔍 Other</option>
+        </select>
+      </div>
+
+      <!-- Other: free text (shown when 'Other' selected) -->
+      <div class="field" id="otherField" style="display:none;">
+        <label for="lookingForOther">Please describe what you're looking for</label>
+        <input id="lookingForOther" class="input" type="text" placeholder="e.g. Custom bangle, gold chain…" />
+      </div>
+
+      <!-- Join Now -->
+      <button class="btn btn-primary" id="joinNowBtn">
+        <span class="btn-text">📹 Join Live Now</span>
+        <span class="spinner"></span>
+      </button>
+
+
+      <!-- Divider -->
+      <div class="divider">or schedule a call</div>
+
+      <!-- Schedule chips -->
+      <div class="schedule-chips">
+        <div class="chip" data-value="15" id="chip15">
+          <span class="chip-icon">⚡</span>In 15 min
+        </div>
+        <div class="chip" data-value="30" id="chip30">
+          <span class="chip-icon">🕐</span>In 30 min
+        </div>
+        <div class="chip" data-value="60" id="chip60">
+          <span class="chip-icon">🕑</span>In 1 hr
+        </div>
+        <div class="chip" data-value="custom" id="chipCustom">
+          <span class="chip-icon">📅</span>Custom
+        </div>
+      </div>
+
+      <!-- Custom date+time (shown when Custom selected) -->
+      <div class="custom-dt-group" id="customDtGroup">
+        <div class="field">
+          <label for="customDate">Date</label>
+          <input id="customDate" class="input" type="date" />
+        </div>
+        <div class="field">
+          <label for="customTime">Time</label>
+          <input id="customTime" class="input" type="time" />
+        </div>
+      </div>
+
+      <!-- Email (shown when any schedule selected) -->
+      <div class="field email-field" id="emailFieldWrapper">
+        <label for="userEmail">Your Email <span style="color:var(--accent-light)">(for confirmation)</span></label>
+        <input id="userEmail" class="input" type="email" placeholder="you@example.com" autocomplete="email" />
+        <div class="field-error" id="emailError">Please enter a valid email</div>
+      </div>
+
+      <!-- Schedule button (shown when schedule selected) -->
+      <button class="btn btn-outline" id="scheduleBtn" style="display:none;">
+        <span class="btn-text">📅 Confirm Schedule</span>
+        <span class="spinner"></span>
+      </button>
+
+    </div>
+
+    <!-- Confirmation card (shown after scheduling) -->
+    <div class="card" id="confirmCard">
+      <div class="confirm-icon">✅</div>
+      <div class="confirm-title">Call Scheduled!</div>
+      <div class="confirm-subtitle" id="confirmSubtitle">
+        We've sent a confirmation email with your join link.
+      </div>
+
+      <div class="schedule-time-badge" id="confirmTimeBadge">
+        📅 Scheduled for —
+      </div>
+
+      <div class="join-link-box">
+        <span class="join-link-url" id="joinLinkUrl">—</span>
+        <button class="copy-btn" id="copyLinkBtn">Copy</button>
+      </div>
+
+      <button class="btn btn-primary" id="joinNowConfirmBtn" style="display:none;">
+        🚀 Join Now
+      </button>
+
+      <button class="btn btn-outline" id="scheduleAnotherBtn" style="margin-top:10px;">
+        Schedule Another
+      </button>
+    </div>
+
+    <!-- Trust indicators -->
+    <div class="trust-row">
+      <div class="trust-item"><span class="icon">🔒</span> Secure & Private</div>
+      <div class="trust-item"><span class="icon">📹</span> HD Video Call</div>
+      <div class="trust-item"><span class="icon">⚡</span> No Download Needed</div>
+    </div>
+
+  </div>
+
+  <script type="module" src="/js/pages/index.js"></script>
 </body>
 </html>
