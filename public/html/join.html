@@ -1,0 +1,181 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Join Your Vaama Live Call</title>
+  <link rel="stylesheet" href="/css/index.css" />
+  <style>
+    .join-state { text-align: center; }
+    .countdown-ring {
+      width: 80px; height: 80px;
+      border-radius: 50%;
+      background: conic-gradient(var(--accent) var(--pct, 0%), rgba(255,255,255,.06) 0%);
+      display: flex; align-items: center; justify-content: center;
+      margin: 0 auto 20px;
+      font-size: 22px; font-weight: 800;
+      position: relative;
+    }
+    .countdown-ring::before {
+      content: '';
+      position: absolute;
+      inset: 6px;
+      border-radius: 50%;
+      background: var(--bg-card);
+    }
+    .countdown-value { position: relative; z-index: 1; }
+    .countdown-label { font-size: 13px; color: var(--text-muted); margin-bottom: 24px; }
+    .badge-time {
+      background: rgba(124,58,237,.1);
+      border: 1px solid rgba(124,58,237,.25);
+      border-radius: var(--radius-sm);
+      padding: 10px 16px;
+      font-size: 14px; font-weight: 600;
+      color: var(--accent-light);
+      margin-bottom: 24px;
+      display: inline-block;
+    }
+  </style>
+</head>
+<body>
+  <div class="page-wrapper">
+    <header class="page-header">
+      <div class="brand-badge"><span class="dot"></span>Vaama Live Support</div>
+      <h1 id="pageTitle">Joining your call…</h1>
+      <p id="pageSubtitle">Please wait a moment.</p>
+    </header>
+
+    <div class="card join-state" id="loadingState">
+      <div style="font-size:48px;margin-bottom:16px;">⏳</div>
+      <p style="color:var(--text-muted)">Looking up your call…</p>
+    </div>
+
+    <!-- State: active (can join now) -->
+    <div class="card join-state" id="activeState" style="display:none;">
+      <div style="font-size:48px;margin-bottom:16px;">🟢</div>
+      <div class="confirm-title">Your Expert is Ready!</div>
+      <div class="confirm-subtitle" id="activeMsg">Click below to join your live video call.</div>
+      <div class="badge-time" id="activeBadge">—</div>
+      <button class="btn btn-primary" id="joinCallBtn">🚀 Join Now</button>
+    </div>
+
+    <!-- State: too early (show countdown) -->
+    <div class="card join-state" id="earlyState" style="display:none;">
+      <div class="countdown-ring" id="countdownRing">
+        <span class="countdown-value" id="countdownVal">—</span>
+      </div>
+      <div class="confirm-title">Your Call Starts Soon</div>
+      <div class="badge-time" id="earlyBadge">Scheduled for —</div>
+      <p class="countdown-label">Link becomes active 15 minutes before your call.<br/>Come back then or keep this page open!</p>
+      <button class="btn btn-outline" onclick="window.location.reload()">🔄 Refresh</button>
+    </div>
+
+    <!-- State: expired -->
+    <div class="card join-state" id="expiredState" style="display:none;">
+      <div style="font-size:48px;margin-bottom:16px;">⌛</div>
+      <div class="confirm-title">This Link Has Expired</div>
+      <div class="confirm-subtitle">Your scheduled call window has passed. Please schedule a new call.</div>
+      <a href="/" class="btn btn-primary" style="margin-top:16px;text-decoration:none;">📅 Schedule Again</a>
+    </div>
+
+    <!-- State: not found -->
+    <div class="card join-state" id="notFoundState" style="display:none;">
+      <div style="font-size:48px;margin-bottom:16px;">❓</div>
+      <div class="confirm-title">Link Not Found</div>
+      <div class="confirm-subtitle">This join link is invalid or has already been used.</div>
+      <a href="/" class="btn btn-outline" style="margin-top:16px;text-decoration:none;">← Go Back</a>
+    </div>
+  </div>
+
+  <script>
+    const token = window.location.pathname.split('/').pop();
+    let scheduleData = null;
+    let countdownTimer = null;
+
+    async function init() {
+      try {
+        const res = await fetch(`/api/schedule/join/${token}`);
+        if (res.status === 404) { showState('notFound'); return; }
+        const data = await res.json();
+        scheduleData = data;
+        evaluate(data);
+      } catch {
+        showState('notFound');
+      }
+    }
+
+    function evaluate(data) {
+      const now      = Date.now();
+      const schedAt  = new Date(data.scheduled_at).getTime();
+      const minsLeft = (schedAt - now) / 60000;
+      const minsOver = (now - schedAt) / 60000;
+
+      if (data.status === 'cancelled') { showState('expired'); return; }
+      if (minsOver > 60) { showState('expired'); return; }  // 1hr grace window
+
+      const fmt = new Date(data.scheduled_at).toLocaleString('en-IN', {
+        weekday: 'short', day: 'numeric', month: 'short',
+        hour: '2-digit', minute: '2-digit', hour12: true, timeZone: 'Asia/Kolkata',
+      });
+
+      if (minsLeft <= 15) {
+        // ACTIVE — can join now
+        document.getElementById('activeBadge').textContent = `📅 ${fmt} IST`;
+        document.getElementById('activeMsg').textContent =
+          `Hi ${data.name}! Your call${minsLeft > 0 ? ' starts in ' + Math.ceil(minsLeft) + ' min' : ' is starting now'}.`;
+        document.getElementById('joinCallBtn').addEventListener('click', () => joinCall(data));
+        showState('active');
+      } else {
+        // TOO EARLY — show countdown
+        document.getElementById('earlyBadge').textContent = `📅 ${fmt} IST`;
+        document.getElementById('pageTitle').textContent  = 'Your Call is Scheduled';
+        document.getElementById('pageSubtitle').textContent = 'The join link activates 15 minutes before your call.';
+        showState('early');
+        startCountdown(schedAt - 15 * 60 * 1000); // countdown to "15 min before"
+      }
+    }
+
+    function joinCall(data) {
+      const returnUrl = data.return_url || 'https://vaama.co';
+      const d = btoa(JSON.stringify({ name: data.name, phone: data.phone || '', returnUrl }));
+      window.location.href = `/call-request?data=${encodeURIComponent(d)}`;
+    }
+
+    function startCountdown(targetMs) {
+      function tick() {
+        const left = Math.max(0, targetMs - Date.now());
+        const h = Math.floor(left / 3600000);
+        const m = Math.floor((left % 3600000) / 60000);
+        const s = Math.floor((left % 60000) / 1000);
+
+        const label = h > 0
+          ? `${h}h ${m}m`
+          : m > 0 ? `${m}m ${s}s` : `${s}s`;
+        document.getElementById('countdownVal').textContent = label;
+
+        // Update ring progress (0–100% = targetMs window of 24h max)
+        const totalWindow = 24 * 3600000;
+        const pct = ((totalWindow - left) / totalWindow * 100).toFixed(1);
+        document.getElementById('countdownRing').style.setProperty('--pct', pct + '%');
+
+        if (left <= 0) {
+          clearInterval(countdownTimer);
+          window.location.reload();
+        }
+      }
+      tick();
+      countdownTimer = setInterval(tick, 1000);
+    }
+
+    function showState(state) {
+      document.getElementById('loadingState').style.display  = 'none';
+      document.getElementById('activeState').style.display   = state === 'active'   ? 'block' : 'none';
+      document.getElementById('earlyState').style.display    = state === 'early'    ? 'block' : 'none';
+      document.getElementById('expiredState').style.display  = state === 'expired'  ? 'block' : 'none';
+      document.getElementById('notFoundState').style.display = state === 'notFound' ? 'block' : 'none';
+    }
+
+    init();
+  </script>
+</body>
+</html>

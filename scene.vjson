@@ -1,0 +1,1572 @@
+{
+  "version": "0.19.1",
+  "type": "ViewerApp",
+  "metadata": {
+    "generator": "WebGiViewerApp",
+    "version": 2
+  },
+  "plugins": [
+    {
+      "sceneEnvironmentRotation": 0,
+      "sceneEnvironmentIntensity": 0.738066437533369,
+      "sceneEnvironmentFixedDirection": true,
+      "tonemapBackground": false,
+      "tonemapGround": false,
+      "ssbevelEnabled": false,
+      "ssbevelIntensity": null,
+      "type": "SimpleBackgroundEnvUiPlugin2"
+    },
+    {
+      "exportOptions": {
+        "compress": false,
+        "name": "scene",
+        "viewerConfig": true,
+        "encodeUint16Rgbe": false,
+        "convertMeshToIndexed": false,
+        "embedUrlImagePreviews": false,
+        "embedUrlImages": false,
+        "onlyVisible": false,
+        "dracoOptions": {
+          "encodeSpeed": 5,
+          "method": 1,
+          "quantizationVolume": "mesh",
+          "quantizationBits": {
+            "POSITION": 14,
+            "NORMAL": 10,
+            "COLOR": 8,
+            "TEX_COORD": 12,
+            "GENERIC": 12
+          }
+        },
+        "encrypt": false,
+        "encryptKey": "",
+        "ignoreInvalidMorphTargetTracks": false,
+        "ignoreEmptyTextures": true
+      },
+      "type": "AssetExporterPlugin"
+    },
+    {
+      "type": "GLTFDracoExportPlugin"
+    },
+    {
+      "loader": 0,
+      "loadingTextHeader": "Loading Files",
+      "errorTextHeader": "Error Loading Files",
+      "showFileNames": true,
+      "showProcessStates": true,
+      "showProgress": true,
+      "hideOnOnlyErrors": true,
+      "hideOnFilesLoad": true,
+      "hideOnSceneObjectLoad": false,
+      "minimizeOnSceneObjectLoad": true,
+      "showOnFilesLoading": true,
+      "showOnSceneEmpty": true,
+      "hideDelay": 500,
+      "backgroundOpacity": 0.5,
+      "backgroundBlur": 24,
+      "background": "#ffffff",
+      "textColor": "#222222",
+      "logoImage": "data:image/svg+xml,%3c?xml%20version='1.0'%20encoding='utf-8'?%3e%3c!--%20Generator:%20Adobe%20Illustrator%2024.2.1,%20SVG%20Export%20Plug-In%20.%20SVG%20Version:%206.00%20Build%200)%20--%3e%3csvg%20version='1.1'%20id='Layer_2_1_'%20xmlns='http://www.w3.org/2000/svg'%20xmlns:xlink='http://www.w3.org/1999/xlink'%20x='0px'%20y='0px'%20viewBox='0%200%201869.2%20653.9'%20style='enable-background:new%200%200%201869.2%20653.9;'%20xml:space='preserve'%3e%3cstyle%20type='text/css'%3e%20.st0{fill:%23191919;}%20%3c/style%3e%3cg%20id='Layer_1-2'%3e%3cg%3e%3cg%3e%3cg%3e%3cg%3e%3cpath%20class='st0'%20d='M144.3,217.8c0-5-1.6-9.4-4.8-13.2c-3.2-3.8-7.3-6.2-12.3-7.4l84.8-34.9V552c0,26.2-6.7,49.6-20.2,70.1%20c-13.4,20.5-33.7,31.1-60.9,31.8c-30.6-1.8-52.4-17.3-65.7-46.5c-5.3-12.1-7.9-24.5-7.9-37.3h6.8c0,12.1,2.4,23.5,7.2,34.2%20c5.2,9.3,13.4,15.4,24.5,18.1c11.1,2.7,21,1.7,29.9-3.1c6.2-3.9,10.5-10.4,13.2-19.5c2.6-9.1,4.2-18.2,4.6-27.4%20c0.5-9.1,0.7-15.6,0.7-19.5L144.3,217.8L144.3,217.8z'/%3e%3cpath%20class='st0'%20d='M506.2,320.4c0,0.5-0.5,0.8-1.4,1h1.4v6.8H306.1c-0.7,26.7,5.3,53.2,18,79.5%20c12.6,26.3,33.6,42.9,62.8,49.8c36,4.6,68.4-4.3,97.1-26.7c5-4.6,9.6-9.6,13.7-15c0.5-0.7,1.1-1.1,2-1.4c0.9-0.2,1.8,0,2.7,0.7%20c0.7,0.5,1.1,1.1,1.4,2c0.2,0.9,0,1.8-0.7,2.7c-4.3,5.5-9,10.7-14,15.7c-27.1,30.1-61.2,48.1-102.3,54%20c-46.1,1.6-82.3-14.5-108.6-48.4S237.8,370,236,329c-1.4-32.8,5.4-63.5,20.2-92.2c14.8-28.6,38-49.4,69.4-62.4%20c25.8-9.6,52.1-12.4,79-8.6c37.8,8,65.3,29.1,82.4,63.3C500.5,258.1,506.8,288.5,506.2,320.4L506.2,320.4z%20M306.1,321.5h129.3%20c0.2-0.5,0.3-0.8,0.3-1c10.7-28.3,16.4-55.9,17.1-82.8c-1.1-32.8-17.7-54.3-49.6-64.3c-37.6-7.3-65.6,5.8-83.8,39.3%20c-10.7,29.4-15.2,60-13.3,91.7V321.5z'/%3e%3cpath%20class='st0'%20d='M1016.1,179.5c1.4-3.9,1-7.5-1-10.8c-2-3.3-5.3-5.1-9.6-5.3h41.4c-11.2,0.9-19,6.5-23.6,16.8L905.6,486%20l1.7,4.5h-72.8l-69.1-180.2L697.7,486l1.7,4.5h-72.8L507.9,181.3c-4.6-10.5-12.5-16.4-23.9-17.8h106.7%20c-4.1,0.5-7.2,2.3-9.4,5.6c-2.2,3.3-2.6,7-1.2,11.1l114.2,296.2L761.6,301l-45.8-119.7c-4.6-10.5-12.5-16.4-23.9-17.8h106.7%20h-0.3c-3.2,0.5-5.8,1.9-7.9,4.3c-2,2.4-3.1,5.1-3.1,8c0,1.4,0.2,2.9,0.7,4.4l10.3,26l3.4,9.6l100.5,260.6L1016.1,179.5%20L1016.1,179.5z'/%3e%3cpath%20class='st0'%20d='M1293.8,320.4c0,0.5-0.5,0.8-1.4,1h1.4v6.8h-200.1c-0.7,26.7,5.3,53.2,17.9,79.5%20c12.7,26.3,33.6,42.9,62.8,49.8c36,4.6,68.4-4.3,97.1-26.7c5-4.6,9.6-9.6,13.7-15c0.4-0.7,1.1-1.1,2.1-1.4%20c0.9-0.2,1.8,0,2.7,0.7c0.7,0.5,1.1,1.1,1.4,2c0.2,0.9,0,1.8-0.7,2.7c-4.3,5.5-9,10.7-14,15.7c-27.1,30.1-61.2,48.1-102.3,54%20c-46.1,1.6-82.2-14.5-108.6-48.4c-26.3-33.9-40.4-71.3-42.2-112.3c-1.4-32.8,5.3-63.5,20.2-92.2c14.8-28.6,38-49.4,69.4-62.4%20c25.8-9.6,52.1-12.4,79-8.6c37.8,8,65.3,29.1,82.4,63.3C1288.1,258.1,1294.5,288.5,1293.8,320.4L1293.8,320.4z%20M1093.7,321.5%20H1223c0.2-0.5,0.3-0.8,0.3-1c10.7-28.3,16.4-55.9,17.1-82.8c-1.2-32.8-17.7-54.3-49.6-64.3c-37.6-7.3-65.6,5.8-83.8,39.3%20c-10.7,29.4-15.2,60-13.3,91.7V321.5z'/%3e%3cpath%20class='st0'%20d='M1390.6,472.3c0,4.8,1.6,8.9,4.8,12.3c3.2,3.4,7.2,5.4,12,5.8h-101.6c4.8-0.5,8.8-2.3,12-5.6%20c3.2-3.3,4.8-7.4,4.8-12.1V52.7c0-4.8-1.6-8.9-4.8-12.5c-3.2-3.5-7.2-5.6-12-6.3L1390.6,0V472.3z'/%3e%3c/g%3e%3cpath%20class='st0'%20d='M32.9,223v248.1l68.1-22.2V169.3l-84.8,34.2c5,0.7,9.1,2.9,12.1,6.5S32.9,218,32.9,223z'/%3e%3c/g%3e%3cg%3e%3cpath%20class='st0'%20d='M117.1,32.9l-25-19c-0.1-0.1-0.2-0.1-0.3-0.2c0,0,0,0-0.1,0c-0.1-0.1-0.3-0.1-0.4-0.1H25.8%20c-0.1,0-0.3,0-0.4,0.1c0,0,0,0,0,0c-0.1,0.1-0.2,0.1-0.3,0.2l-25,19H117.1z'/%3e%3cpath%20class='st0'%20d='M0.9,36.8l37.7,33.4c0,0,0,0,0,0l19.1,16.9c0,0,0,0,0.1,0c0.1,0.1,0.2,0.1,0.3,0.2c0,0,0,0,0,0s0,0,0,0%20c0,0,0,0,0,0c0.1,0.1,0.3,0.1,0.4,0.1s0.3,0,0.4-0.1c0,0,0,0,0,0c0,0,0,0,0,0c0,0,0,0,0,0c0.1,0,0.2-0.1,0.3-0.2c0,0,0,0,0.1,0%20l56.8-50.4L0.9,36.8L0.9,36.8z'/%3e%3c/g%3e%3c/g%3e%3cg%3e%3cpath%20class='st0'%20d='M1568.5,373.5c-3.2,0-4.2-1.2-4.2-3.5c0-3.4,1.6-6.1,4.2-6.1c3.4,0,9.1,1.8,17.6,1.8%20c14.8,0,25.7-11.6,25.7-30.8c0-7.5-1.8-20.3-16.4-20.3c-11.3,0-17.8,8.9-22.5,20.7c-1.6,3.5-3.2,4.7-5.7,4.7%20c-3.4,0-7.7-2.8-7.7-8.1c0-10.3,15.4-22.5,36.5-22.5c15.4,0,34.9,6.1,34.9,27.6c0,20-19.2,29.6-33.4,30.8v0.8%20c12.4,2.2,26.9,10.9,26.9,28.4c0,29-23.7,40.7-48.2,40.7c-27.4,0-37.9-14-37.9-23.1c0-6.3,4.9-10.3,9.3-10.3c3.2,0,4.3,2,5.3,5.7%20c4.2,15,10.7,22.5,24.1,22.5s27.3-10.1,27.3-37.9c0-8.9-3.9-22.7-19.9-22.7C1576.8,371.9,1571,373.5,1568.5,373.5L1568.5,373.5z'%20/%3e%3cpath%20class='st0'%20d='M1745,294.3l0.8,0.6l-30.4,123.6c-1.6,5.9-1.8,10.3,1.6,10.3c5.1,0,13.4-13.2,16.8-19.9l3.9,2.8%20c-6.3,14.2-16.4,26.3-29.8,26.3c-9.5,0-11.1-8.1-7.7-21.3c1.8-6.5,3.6-13.2,5.1-19.8h-0.4c-10.9,19.9-26.7,41.1-48.2,41.1%20c-14.8,0-18-12.4-18-24.7c0-22.5,19.2-71.1,62.8-71.1c6.1,0,12.2,2,15.4,4l8.5-35.7c1.4-5.9,1.2-7.1-3.4-7.5l-10.9-1.2l0.8-3.4%20L1745,294.3L1745,294.3z%20M1665.8,428.6c17.4,0,39.3-37.3,45.2-60c1.2-5.3,3.4-12.2,4.5-17c-2.2-1.4-7.1-3.4-12.8-3.4%20c-29.6,0-46,46.6-46,66.7C1656.7,424.2,1659.9,428.6,1665.8,428.6L1665.8,428.6z'/%3e%3c/g%3e%3cpath%20class='st0'%20d='M1742.6,493.5h-184.3c-67.5,0-124.8-52.1-128.4-119.5c-4-73,54.3-133.6,126.4-133.6h184.2%20c69.4,0,127.5,54.9,128.8,124.3C1870.4,435.5,1813.2,493.5,1742.6,493.5L1742.6,493.5z%20M1556.2,247.8%20c-67.9,0-122.7,57.1-118.9,125.8c3.5,63.5,57.3,112.5,120.9,112.5h182.3c65.3,0,120.1-51.7,121.2-116.9%20c1.2-66.7-52.7-121.3-119.1-121.3H1556.2L1556.2,247.8z'/%3e%3c/g%3e%3c/g%3e%3c/svg%3e",
+      "enabled": true,
+      "type": "LoadingScreenPlugin"
+    },
+    {
+      "enabled": false,
+      "type": "CannonPhysics"
+    },
+    {
+      "enabled": true,
+      "autoFocus": false,
+      "type": "Picking"
+    },
+    {
+      "enabled": true,
+      "type": "GBuffer",
+      "pass": {}
+    },
+    {
+      "maxFrameCount": 32,
+      "jitter": true,
+      "type": "Progressive",
+      "passes": {
+        "progressive": {
+          "enabled": true
+        }
+      }
+    },
+    {
+      "extension": {
+        "enabled": false,
+        "aberrationIntensity": 0.01
+      },
+      "enabled": true,
+      "type": "ChromaticAberration"
+    },
+    {
+      "extension": {
+        "toneMapping": 4,
+        "tonemapBackground": false,
+        "clipBackground": false,
+        "exposure": 1,
+        "saturation": 1,
+        "contrast": 1
+      },
+      "enabled": true,
+      "type": "Tonemap"
+    },
+    {
+      "extension": {
+        "enabled": false,
+        "lutBackground": true,
+        "intensity": 1
+      },
+      "enabled": true,
+      "type": "LUTPlugin1"
+    },
+    {
+      "extension": {
+        "enabled": false,
+        "power": 0.5,
+        "bgcolor": {
+          "r": 0,
+          "g": 0,
+          "b": 0,
+          "isColor": true
+        }
+      },
+      "enabled": true,
+      "type": "Vignette"
+    },
+    {
+      "extension": {
+        "enabled": false,
+        "grainMultiply": false,
+        "grainIntensity": 10
+      },
+      "enabled": true,
+      "type": "FilmicGrain"
+    },
+    {
+      "extension": {},
+      "enabled": true,
+      "type": "GammaCorrection"
+    },
+    {
+      "type": "SSReflection",
+      "passes": {
+        "ssr": {
+          "intensity": 1.5,
+          "boost": {
+            "x": 1,
+            "y": 1,
+            "z": 1,
+            "isVector3": true
+          },
+          "objectRadius": 2,
+          "autoRadius": true,
+          "power": 1.1,
+          "tolerance": 5,
+          "stepCount": 16,
+          "lowQualityFrames": 0,
+          "maskFrontRays": true,
+          "maskFrontFactor": -0.2,
+          "enabled": true
+        }
+      }
+    },
+    {
+      "type": "SSAO",
+      "passes": {
+        "ssao": {
+          "bilateralPass": {
+            "smoothEnabled": true,
+            "edgeSharpness": 0.1,
+            "enabled": true
+          },
+          "parameters": {
+            "intensity": 0.2,
+            "occlusionWorldRadius": 1.83,
+            "bias": 0.00001,
+            "falloff": 1.5,
+            "useSmallScaleAO": false,
+            "intensitySmallAO": 0.2,
+            "autoRadius": false,
+            "projScale": 1470.4909721938307
+          },
+          "enabled": true
+        }
+      }
+    },
+    {
+      "enabled": true,
+      "type": "FrameFade",
+      "pass": {
+        "enabled": true
+      }
+    },
+    {
+      "autoIncrementTime": true,
+      "loopAnimations": true,
+      "loopRepetitions": "Infinity",
+      "timeScale": 1,
+      "animationSpeed": 1,
+      "animateOnScroll": false,
+      "animateOnDrag": false,
+      "dragAxis": "y",
+      "autoplayOnLoad": false,
+      "syncMaxDuration": false,
+      "type": "GLTFAnimation"
+    },
+    {
+      "enabled": true,
+      "type": "AnisotropyPlugin"
+    },
+    {
+      "enabled": true,
+      "type": "TriplanarUVMappingPlugin"
+    },
+    {
+      "enabled": true,
+      "type": "ThinFilmLayerPlugin"
+    },
+    {
+      "enabled": true,
+      "type": "FragmentClippingExtensionPlugin1"
+    },
+    {
+      "enabled": true,
+      "type": "FlatMaterialExtensionPlugin1"
+    },
+    {
+      "enabled": true,
+      "type": "NoiseBumpMaterialPlugin"
+    },
+    {
+      "enabled": true,
+      "bicubicFiltering": true,
+      "type": "CustomBumpMapPlugin"
+    },
+    {
+      "enabled": true,
+      "type": "ClearcoatTintPlugin"
+    },
+    {
+      "enabled": false,
+      "type": "VelocityBuffer",
+      "pass": {}
+    },
+    {
+      "enabled": true,
+      "type": "TAA",
+      "pass": {
+        "feedBack": {
+          "x": 0.88,
+          "y": 0.97,
+          "isVector2": true
+        },
+        "enabled": true
+      }
+    },
+    {
+      "cameraViews": [],
+      "viewLooping": false,
+      "viewPauseTime": 200,
+      "animEase": "easeInOutSine",
+      "animDuration": 1000,
+      "rotationOffset": 0.25,
+      "interpolateMode": "spherical",
+      "splineCurve": "chordal",
+      "seekOnScroll": false,
+      "type": "CameraViews"
+    },
+    {
+      "enabled": false,
+      "rdLight": {
+        "object": {
+          "uuid": "3812eb81-9203-41e5-b6be-6921b663b8df",
+          "type": "DirectionalLight",
+          "castShadow": true,
+          "layers": 0,
+          "matrix": [
+            1,
+            0,
+            0,
+            0,
+            0,
+            1,
+            0,
+            0,
+            0,
+            0,
+            1,
+            0,
+            0,
+            1,
+            0,
+            1
+          ],
+          "up": [
+            0,
+            1,
+            0
+          ],
+          "color": 13430527,
+          "intensity": 1,
+          "shadow": {
+            "bias": -0.001,
+            "radius": 2,
+            "mapSize": [
+              1024,
+              1024
+            ],
+            "camera": {
+              "uuid": "a363ebc7-e16c-4217-9ec1-f67d43e308e9",
+              "type": "OrthographicCamera",
+              "layers": 1,
+              "up": [
+                0,
+                1,
+                0
+              ],
+              "zoom": 1,
+              "left": -2,
+              "right": 2,
+              "top": 2,
+              "bottom": -2,
+              "near": -2,
+              "far": 9,
+              "view": {
+                "enabled": true,
+                "fullWidth": 1024,
+                "fullHeight": 1024,
+                "offsetX": -0.25,
+                "offsetY": 0.375,
+                "width": 1024,
+                "height": 1024
+              }
+            }
+          },
+          "target": "1a702ab4-ab79-4186-be05-1a26462b0140"
+        },
+        "userData": {},
+        "type": "DirectionalLight2",
+        "target": [
+          0,
+          0,
+          -1
+        ],
+        "shadowParams": {
+          "enabled": true,
+          "radius": 2,
+          "width": 1024,
+          "height": 1024,
+          "bias": -0.001,
+          "normalBias": 0,
+          "near": 1.5,
+          "far": 4,
+          "frustumSize": 4
+        },
+        "randomParams": {
+          "focus": 1,
+          "spread": 0.01,
+          "distanceScale": 50,
+          "minDistanceScale": {
+            "x": 10,
+            "y": 10,
+            "z": 10,
+            "isVector3": true
+          },
+          "normalDirection": {
+            "x": 0.010203019316098974,
+            "y": 0.9998958929776994,
+            "z": 0.010203019316098974,
+            "isVector3": true
+          },
+          "direction": {
+            "x": -0.9,
+            "y": 0.5,
+            "z": -1,
+            "isVector3": true
+          }
+        }
+      },
+      "lightLayers": 1,
+      "type": "RandomizedDirectionalLight"
+    },
+    {
+      "enabled": false,
+      "worldRadius": 100,
+      "tripodHeight": 10,
+      "originPosition": {
+        "x": 0,
+        "y": 0,
+        "z": 0,
+        "isVector3": true
+      },
+      "type": "HDRiGroundPlugin"
+    },
+    {
+      "enableEdit": false,
+      "focalPoint": {
+        "x": 0,
+        "y": 0,
+        "z": 0,
+        "isVector3": true
+      },
+      "crossFadeTime": 200,
+      "enabled": false,
+      "type": "DepthOfField",
+      "pass": {
+        "nearFarBlurScale": {
+          "x": 0.25,
+          "y": 0.25,
+          "isVector2": true
+        },
+        "focalDepthRange": {
+          "x": 0.5,
+          "y": 1.5,
+          "isVector2": true
+        },
+        "enabled": false
+      }
+    },
+    {
+      "enabled": false,
+      "radius": 0.015,
+      "intensity": 1,
+      "tolerance": 1.5,
+      "onlySSCSDebug": false,
+      "stepCount": 2,
+      "type": "SSContactShadows"
+    },
+    {
+      "type": "SSGI",
+      "passes": {
+        "ssrtgi": {
+          "bilateralPass": {
+            "smoothEnabled": true,
+            "edgeSharpness": 0.1,
+            "enabled": true
+          },
+          "intensity": 2,
+          "power": 1.1,
+          "autoRadius": true,
+          "objectRadius": 2,
+          "tolerance": 1,
+          "bias": 0.15,
+          "falloff": 0.7,
+          "rayCount": 2,
+          "stepCount": 4,
+          "smoothEnabled": true,
+          "enabled": false
+        }
+      }
+    },
+    {
+      "enabled": false,
+      "type": "NormalBufferPlugin",
+      "pass": {}
+    },
+    {
+      "enabled": false,
+      "type": "SSBevelPlugin",
+      "pass": {
+        "sceneBevel": false,
+        "sceneBevelRadius": 2,
+        "enabled": false
+      }
+    },
+    {
+      "model": "",
+      "groundBelowModel": false,
+      "type": "ModelStagePlugin"
+    },
+    {
+      "enabled": false,
+      "enableEdit": false,
+      "invert": false,
+      "sensitivity": 0.5,
+      "focalPoint": {
+        "x": 0,
+        "y": 0,
+        "z": 0,
+        "isVector3": true
+      },
+      "damping": 0.5,
+      "cameraView": "",
+      "type": "ParallaxCameraControllerPlugin"
+    },
+    {
+      "enabled": true,
+      "type": "Bloom",
+      "pass": {
+        "threshold": 2,
+        "softThreshold": 0.5,
+        "intensity": 0.2,
+        "bloomIterations": 4,
+        "radius": 0.6,
+        "power": 1,
+        "enabled": true
+      }
+    },
+    {
+      "bakedShadows": true,
+      "groundReflection": false,
+      "physicalReflections": false,
+      "autoFrustumSize": true,
+      "shadowBaker": {
+        "randomizedLight": {
+          "object": {
+            "uuid": "c070642b-d198-485d-9647-09462c43d9bd",
+            "type": "DirectionalLight",
+            "castShadow": true,
+            "layers": 32,
+            "matrix": [
+              1,
+              0,
+              0,
+              0,
+              0,
+              1,
+              0,
+              0,
+              0,
+              0,
+              1,
+              0,
+              0,
+              0,
+              0,
+              1
+            ],
+            "up": [
+              0,
+              1,
+              0
+            ],
+            "color": 16777215,
+            "intensity": 10,
+            "shadow": {
+              "radius": 10,
+              "mapSize": [
+                1024,
+                1024
+              ],
+              "camera": {
+                "uuid": "0faa8b0a-e555-4349-a176-52921f72ea57",
+                "type": "OrthographicCamera",
+                "layers": 1,
+                "up": [
+                  0,
+                  1,
+                  0
+                ],
+                "zoom": 1,
+                "left": -2,
+                "right": 2,
+                "top": 2,
+                "bottom": -2,
+                "near": -2,
+                "far": 41,
+                "view": {
+                  "enabled": true,
+                  "fullWidth": 1024,
+                  "fullHeight": 1024,
+                  "offsetX": -0.25,
+                  "offsetY": 0.375,
+                  "width": 1024,
+                  "height": 1024
+                }
+              }
+            },
+            "target": "326284de-f693-4e27-9b93-0bdb5214ecdd"
+          },
+          "userData": {},
+          "type": "DirectionalLight2",
+          "target": [
+            0.09856602183139421,
+            -0.9930824782853647,
+            -0.06381168124200738
+          ],
+          "shadowParams": {
+            "enabled": true,
+            "radius": 10,
+            "width": 1024,
+            "height": 1024,
+            "bias": 0,
+            "normalBias": 0,
+            "near": 1.5,
+            "far": 20,
+            "frustumSize": 4
+          },
+          "randomParams": {
+            "focus": 1,
+            "spread": 0.9,
+            "distanceScale": 20,
+            "minDistanceScale": {
+              "x": 10,
+              "y": 10,
+              "z": 10,
+              "isVector3": true
+            },
+            "normalDirection": {
+              "x": 0,
+              "y": 1,
+              "z": 0,
+              "isVector3": true
+            },
+            "direction": {
+              "x": 0.19245008972987523,
+              "y": 0.9622504486493761,
+              "z": 0.19245008972987523,
+              "isVector3": true
+            }
+          }
+        },
+        "maxFrameNumber": 400,
+        "smoothShadow": false,
+        "shadowMapType": 0,
+        "groundMapMode": "aoMap",
+        "alphaVignette": true,
+        "alphaVignetteAxis": "xy",
+        "maxBakeCount": "Infinity"
+      },
+      "material": {
+        "uuid": "7ac6b8d4-6242-4123-901b-b116e7896fe7",
+        "resource": "materials"
+      },
+      "visible": true,
+      "size": 8,
+      "yOffset": 0,
+      "renderToDepth": true,
+      "tonemapGround": false,
+      "limitCameraAboveGround": false,
+      "type": "Ground"
+    },
+    {
+      "enabled": true,
+      "animationDuration": 2000,
+      "animationDistance": 80,
+      "animationPauseDuration": 6000,
+      "rotationDistance": 0.3,
+      "yOffset": 0,
+      "autoStart": true,
+      "autoStartDelay": 30000,
+      "autoStop": true,
+      "autoStartOnObjectLoad": true,
+      "autoStartOnObjectLoadDelay": 3000,
+      "onlyOnOrbitControls": true,
+      "type": "InteractionPromptPlugin"
+    },
+    {
+      "enabled": true,
+      "type": "LayeredMaterialPlugin"
+    },
+    {
+      "enabled": true,
+      "axis": "y",
+      "invertAxis": false,
+      "analog": true,
+      "hourOffset": 0,
+      "minuteOffset": 0,
+      "secondOffset": 0,
+      "hour": ".*hour.*",
+      "minute": ".*minute.*",
+      "second": ".*second.*",
+      "regex": true,
+      "type": "WatchHandsPlugin"
+    },
+    {
+      "envMap": {
+        "uuid": "dd9a7fab-0abb-4195-9246-7a7336bb4a3a",
+        "resource": "textures"
+      },
+      "envMap2": null,
+      "envMap3": null,
+      "forceSceneEnvMap": false,
+      "type": "Diamond"
+    },
+    {
+      "enabled": true,
+      "type": "GemRefractionPlugin",
+      "pass": {}
+    },
+    {
+      "extension": {
+        "enabled": true,
+        "enableHighlight": false,
+        "enableDynamicSelection": true,
+        "outlineIntensity": 2,
+        "highlightTransparency": 0.84,
+        "outlineColor": {
+          "r": 0.8148465722120952,
+          "g": 0.2541520943200296,
+          "b": 0.13013647668074665,
+          "isColor": true
+        }
+      },
+      "enabled": true,
+      "type": "Outline"
+    },
+    {
+      "enabled": false,
+      "stepCount": 12,
+      "binaryStepCount": 3,
+      "type": "ReliefParallaxMapping"
+    },
+    {
+      "enabled": false,
+      "overCanvas": true,
+      "type": "CSS3DRenderer"
+    },
+    {
+      "enabled": false,
+      "type": "ObjectRotationPlugin"
+    },
+    {
+      "type": "ShapeTubeExtrudePlugin"
+    },
+    {
+      "applyToMap": true,
+      "applyToBumpMap": false,
+      "applyToAlphaMap": false,
+      "inverseAlphaMap": false,
+      "type": "SimpleTextPlugin"
+    },
+    {
+      "type": "MaterialLibraryPlugin"
+    },
+    {
+      "convergeMode": true,
+      "mimeType": "video/mp4",
+      "videoFrameRate": 30,
+      "type": "CanvasRecorder"
+    },
+    {
+      "filename": "snapshot",
+      "progressiveFrames": 64,
+      "tileRows": 1,
+      "tileColumns": 1,
+      "rect": {
+        "x": 0,
+        "y": 0,
+        "z": 1,
+        "w": 1,
+        "isVector4": true
+      },
+      "type": "CanvasSnipper"
+    },
+    {
+      "version": 1,
+      "mode": "full",
+      "scale": 1,
+      "type": "RendererParamsUiPlugin"
+    },
+    {
+      "useNormals": true,
+      "chartOptions": {
+        "fixWinding": false,
+        "maxBoundaryLength": 0,
+        "maxChartArea": 0,
+        "maxCost": 2,
+        "maxIterations": 1,
+        "normalDeviationWeight": 2,
+        "normalSeamWeight": 4,
+        "roundnessWeight": 0.009999999776482582,
+        "straightnessWeight": 6,
+        "textureSeamWeight": 0.5,
+        "useInputMeshUvs": false,
+        "serializableClassId": "UChartOptions"
+      },
+      "packOptions": {
+        "bilinear": true,
+        "blockAlign": false,
+        "bruteForce": false,
+        "createImage": false,
+        "maxChartSize": 0,
+        "padding": 0,
+        "resolution": 0,
+        "rotateCharts": true,
+        "rotateChartsToAxis": true,
+        "texelsPerUnit": 0,
+        "serializableClassId": "UPackOptions"
+      },
+      "type": "XAtlasPlugin"
+    },
+    {
+      "type": "GradientSvgPlugin",
+      "gradientUnits": "objectBoundingBox",
+      "position1": {
+        "x": 0,
+        "y": 0,
+        "isVector2": true
+      },
+      "position2": {
+        "x": 1,
+        "y": 1,
+        "isVector2": true
+      },
+      "angle": 0,
+      "radius": 0.5,
+      "center": {
+        "x": 0.5,
+        "y": 0.5,
+        "isVector2": true
+      },
+      "focus": {
+        "x": 0.5,
+        "y": 0.5,
+        "isVector2": true
+      },
+      "spreadMethod": "pad",
+      "colors": [
+        {
+          "r": 1,
+          "g": 1,
+          "b": 1,
+          "isColor": true
+        },
+        {
+          "r": 1,
+          "g": 0,
+          "b": 0,
+          "isColor": true
+        }
+      ],
+      "applyToBackground": false,
+      "autoRefresh": true
+    },
+    {
+      "animation": {
+        "name": "",
+        "access": "",
+        "options": {},
+        "duration": 1000,
+        "delay": 0,
+        "repeat": 1,
+        "repeatType": "mirror",
+        "ease": "easeInOutSine",
+        "updateScene": false,
+        "updateCamera": false,
+        "updateViewer": false,
+        "animSetParallel": true,
+        "animSet": [],
+        "serializableClassId": "AnimationObject"
+      },
+      "type": "AnimationObjectPlugin"
+    },
+    {
+      "enabled": false,
+      "maxRange": 17,
+      "particleSize": 0.35,
+      "particleSpeed": 0.35,
+      "minRangeY": 1,
+      "paused": false,
+      "type": "SnowFallPlugin"
+    },
+    {
+      "enabled": false,
+      "noiseScale": 1.8,
+      "amplitude": 0.5,
+      "paused": false,
+      "type": "WaveGroundPlugin"
+    },
+    {
+      "enabled": true,
+      "type": "UVMappingPlugin"
+    },
+    {
+      "_distance": 10,
+      "customSceneViews": [],
+      "_imageFormat": "png",
+      "_videoDuration": 5,
+      "_videoFps": 30,
+      "_videoQuality": 8,
+      "_imageQuality": 16,
+      "_enableGround": true,
+      "type": "BatchExport"
+    },
+    {
+      "refreshScene": true,
+      "variations": [],
+      "type": "SwitchNodePlugin"
+    },
+    {
+      "applyOnLoad": true,
+      "variations": [
+        {
+          "uuid": "Metal 04",
+          "regex": true,
+          "title": "Metal 04",
+          "preview": "generate:sphere",
+          "materials": [
+            {
+              "uuid": "a81078da-1e03-43b7-8536-e2fc88a816e8",
+              "resource": "materials"
+            },
+            {
+              "uuid": "87ae54b7-5ac9-4f22-9486-8395f160d0f5",
+              "resource": "materials"
+            },
+            {
+              "uuid": "8cea1d26-7b61-4464-85ce-ce48dc910df3",
+              "resource": "materials"
+            }
+          ],
+          "selectedIndex": 2
+        },
+        {
+          "uuid": "Gem 03",
+          "regex": true,
+          "title": "Gem 03",
+          "preview": "generate:sphere",
+          "materials": [
+            {
+              "uuid": "fcdf83a8-9b9e-4e03-9f7a-244a785c8c83",
+              "resource": "materials"
+            },
+            {
+              "uuid": "14b7eea5-2c8a-4edb-b9ce-bb6ae1288b22",
+              "resource": "materials"
+            },
+            {
+              "uuid": "42c6b6d9-1fd9-4127-a699-190b807039a3",
+              "resource": "materials"
+            }
+          ],
+          "selectedIndex": 0
+        }
+      ],
+      "type": "MaterialConfiguratorPlugin"
+    },
+    {
+      "type": "WebCameraBackgroundPlugin"
+    },
+    {
+      "modelScaleFactor": 0.06,
+      "modelPosition": {
+        "x": 0,
+        "y": 0,
+        "z": 0,
+        "isVector3": true
+      },
+      "modelRotation": {
+        "x": 0,
+        "y": 0,
+        "z": 0,
+        "isVector3": true
+      },
+      "videoScale": 1,
+      "videoSize": {
+        "x": 0,
+        "y": 0,
+        "isVector2": true
+      },
+      "motionBlur": {
+        "enabled": false,
+        "intensity": 1.5,
+        "edgeSmear": 0.2
+      },
+      "environmentReflection": {
+        "enabled": true,
+        "scale": 2,
+        "stretch": 2
+      },
+      "setup": {
+        "modelScaleFactor": 0.06,
+        "modelPosition": {
+          "x": 0,
+          "y": 0,
+          "z": 0,
+          "isVector3": true
+        },
+        "modelRotation": {
+          "x": 0,
+          "y": 0,
+          "z": 0,
+          "isVector3": true
+        }
+      },
+      "ssr": {
+        "enabled": true,
+        "intensity": 1.5,
+        "radius": 2,
+        "tolerance": 5
+      },
+      "ssao": {
+        "enabled": true,
+        "intensity": 0.2,
+        "radius": 1.83,
+        "falloff": 1.5,
+        "bias": 0.00001
+      },
+      "tracking": {
+        "minHandDistance": 10,
+        "snappiness": 0.8,
+        "locationOffset": 0.65,
+        "worldZFactor": 1,
+        "offsetRotation": {
+          "x": 0,
+          "y": 0,
+          "z": 0,
+          "isVector3": true
+        },
+        "zOffset": -3.25
+      },
+      "type": "RingTryonPlugin"
+    },
+    {
+      "type": "RingTryonUIPlugin"
+    }
+  ],
+  "renderManager": {
+    "stableNoise": true,
+    "serializableClassId": "RenderManager"
+  },
+  "scene": {
+    "defaultCamera": {
+      "userData": {},
+      "camControls": {
+        "type": "OrbitControls",
+        "dollyZoom": false,
+        "zoomToCursor": false,
+        "enableDamping": true,
+        "dampingFactor": 0.08,
+        "autoRotate": false,
+        "autoRotateSpeed": 2,
+        "enableZoom": true,
+        "zoomSpeed": 0.15,
+        "maxZoomSpeed": 0.2,
+        "enableRotate": true,
+        "rotateSpeed": 2,
+        "enablePan": true,
+        "panSpeed": 1,
+        "autoPushTarget": false,
+        "autoPullTarget": false,
+        "minDistance": 0.35,
+        "maxDistance": 1000,
+        "minZoom": 0.01,
+        "maxZoom": 1000,
+        "minPolarAngle": 0,
+        "maxPolarAngle": 3.141592653589793,
+        "minAzimuthAngle": -1000000,
+        "maxAzimuthAngle": 1000000,
+        "clampMin": {
+          "x": -1000000,
+          "y": -1000000,
+          "z": -1000000,
+          "isVector3": true
+        },
+        "clampMax": {
+          "x": 1000000,
+          "y": 1000000,
+          "z": 1000000,
+          "isVector3": true
+        },
+        "screenSpacePanning": true,
+        "keyPanSpeed": 7
+      },
+      "camOptions": {
+        "type": "PerspectiveCamera",
+        "aspect": "auto",
+        "focus": 10,
+        "fov": 25,
+        "zoom": 1,
+        "frustumSize": 1,
+        "top": 1,
+        "bottom": -1,
+        "left": -1,
+        "right": 1,
+        "controlsMode": "orbit",
+        "controlsEnabled": true
+      },
+      "position": {
+        "x": -0.5805368140547675,
+        "y": 1.1510363372497407,
+        "z": 6.90003793707398,
+        "isVector3": true
+      },
+      "target": {
+        "x": 0,
+        "y": 0,
+        "z": 0,
+        "isVector3": true
+      }
+    },
+    "environmentIntensity": 0.738066437533369,
+    "fixedEnvMapDirection": true,
+    "backgroundIntensity": 0.49204151094500803,
+    "environmentRotation": {
+      "x": 0,
+      "y": 0,
+      "z": 0,
+      "order": "XYZ",
+      "isEuler": true
+    },
+    "backgroundRotation": {
+      "x": 0,
+      "y": 0,
+      "z": 0,
+      "order": "XYZ",
+      "isEuler": true
+    },
+    "environment": {
+      "uuid": "7a493d73-c5c6-4203-bb91-c091d6278b82",
+      "resource": "textures"
+    },
+    "textureSlots": {},
+    "background": null,
+    "backgroundColor": {
+      "r": 1,
+      "g": 1,
+      "b": 1,
+      "isColor": true
+    },
+    "envMapIntensity": 0.738066437533369
+  },
+  "resources": {
+    "geometries": {},
+    "materials": {
+      "7ac6b8d4-6242-4123-901b-b116e7896fe7": {
+        "metadata": {
+          "version": 4.6001,
+          "type": "Material",
+          "generator": "Material.toJSON"
+        },
+        "uuid": "7ac6b8d4-6242-4123-901b-b116e7896fe7",
+        "type": "MeshStandardMaterial2",
+        "name": "BaseGroundMaterial",
+        "color": 16777215,
+        "roughness": 0.75,
+        "metalness": 0.5,
+        "sheen": 0,
+        "sheenColor": 0,
+        "sheenRoughness": 1,
+        "emissive": 0,
+        "specularIntensity": 1,
+        "specularColor": 16777215,
+        "clearcoat": 0,
+        "clearcoatRoughness": 0,
+        "dispersion": 0,
+        "iridescence": 0,
+        "iridescenceIOR": 1.3,
+        "iridescenceThicknessRange": [
+          100,
+          400
+        ],
+        "anisotropy": 0,
+        "anisotropyRotation": 0,
+        "envMapRotation": [
+          0,
+          0,
+          0,
+          "XYZ"
+        ],
+        "envMapIntensity": 1,
+        "reflectivity": 0.49999999999999983,
+        "transmission": 0,
+        "thickness": 0,
+        "attenuationDistance": 0,
+        "attenuationColor": 16777215,
+        "blendColor": 0,
+        "fog": false,
+        "userData": {
+          "runtimeMaterial": true,
+          "renderToDepth": true,
+          "postTonemap": false,
+          "ssaoDisabled": true,
+          "sscsDisabled": true,
+          "ssreflDisabled": false,
+          "ssreflNonPhysical": true,
+          "gMapMode": "aoMap",
+          "ALPHA_I_RGBA_PACKING": false,
+          "MAP_I_RGBA_PACKING": false,
+          "uuid": "7ac6b8d4-6242-4123-901b-b116e7896fe7"
+        }
+      },
+      "a81078da-1e03-43b7-8536-e2fc88a816e8": {
+        "metadata": {
+          "version": 4.6001,
+          "type": "Material",
+          "generator": "Material.toJSON"
+        },
+        "uuid": "a81078da-1e03-43b7-8536-e2fc88a816e8",
+        "type": "MeshStandardMaterial2",
+        "name": "White Gold",
+        "color": 12763843,
+        "roughness": 0,
+        "metalness": 1,
+        "sheen": 0,
+        "sheenColor": 0,
+        "sheenRoughness": 1,
+        "emissive": 0,
+        "specularIntensity": 1,
+        "specularColor": 16777215,
+        "clearcoat": 0,
+        "clearcoatRoughness": 0,
+        "dispersion": 0,
+        "iridescence": 0,
+        "iridescenceIOR": 1.3,
+        "iridescenceThicknessRange": [
+          100,
+          400
+        ],
+        "anisotropy": 0,
+        "anisotropyRotation": 0,
+        "envMapRotation": [
+          0,
+          0,
+          0,
+          "XYZ"
+        ],
+        "envMapIntensity": 1,
+        "reflectivity": 0.49999999999999983,
+        "transmission": 0,
+        "thickness": 0,
+        "attenuationDistance": 0,
+        "attenuationColor": 16777215,
+        "side": 2,
+        "blendColor": 0,
+        "fog": false,
+        "userData": {
+          "icon": "https://packs.ijewel3d.com/files/1_metal_whitegold_polished_0bfa185673.png",
+          "label": "White Gold",
+          "cloneId": "0_1_4_1",
+          "cloneCount": 0,
+          "gltfExtensions": {},
+          "_6b1395aa-194b-4458-bd49-22ec4592cfc2_version": 1,
+          "uuid": "a81078da-1e03-43b7-8536-e2fc88a816e8"
+        }
+      },
+      "87ae54b7-5ac9-4f22-9486-8395f160d0f5": {
+        "metadata": {
+          "version": 4.6001,
+          "type": "Material",
+          "generator": "Material.toJSON"
+        },
+        "uuid": "87ae54b7-5ac9-4f22-9486-8395f160d0f5",
+        "type": "MeshStandardMaterial2",
+        "name": "Yellow Gold",
+        "color": 15053687,
+        "roughness": 0,
+        "metalness": 1,
+        "sheen": 0,
+        "sheenColor": 0,
+        "sheenRoughness": 1,
+        "emissive": 0,
+        "specularIntensity": 1,
+        "specularColor": 16777215,
+        "clearcoat": 0,
+        "clearcoatRoughness": 0,
+        "dispersion": 0,
+        "iridescence": 0,
+        "iridescenceIOR": 1.3,
+        "iridescenceThicknessRange": [
+          100,
+          400
+        ],
+        "anisotropy": 0,
+        "anisotropyRotation": 0,
+        "envMapRotation": [
+          0,
+          0,
+          0,
+          "XYZ"
+        ],
+        "envMapIntensity": 1,
+        "reflectivity": 0.49999999999999983,
+        "transmission": 0,
+        "thickness": 0,
+        "attenuationDistance": 0,
+        "attenuationColor": 16777215,
+        "side": 2,
+        "blendColor": 0,
+        "fog": false,
+        "userData": {
+          "icon": "https://packs.ijewel3d.com/files/1_metal_gold_polished_5bdbd506e2.png",
+          "label": "Yellow Gold",
+          "cloneId": "0_1_4_2",
+          "cloneCount": 0,
+          "gltfExtensions": {},
+          "_6b1395aa-194b-4458-bd49-22ec4592cfc2_version": 1,
+          "uuid": "87ae54b7-5ac9-4f22-9486-8395f160d0f5"
+        }
+      },
+      "8cea1d26-7b61-4464-85ce-ce48dc910df3": {
+        "metadata": {
+          "version": 4.6001,
+          "type": "Material",
+          "generator": "Material.toJSON"
+        },
+        "uuid": "8cea1d26-7b61-4464-85ce-ce48dc910df3",
+        "type": "MeshStandardMaterial2",
+        "name": "Rose Gold",
+        "color": 15904643,
+        "roughness": 0,
+        "metalness": 1,
+        "sheen": 0,
+        "sheenColor": 0,
+        "sheenRoughness": 1,
+        "emissive": 0,
+        "specularIntensity": 1,
+        "specularColor": 16777215,
+        "clearcoat": 0,
+        "clearcoatRoughness": 0,
+        "dispersion": 0,
+        "iridescence": 0,
+        "iridescenceIOR": 1.3,
+        "iridescenceThicknessRange": [
+          100,
+          400
+        ],
+        "anisotropy": 0,
+        "anisotropyRotation": 0,
+        "envMapRotation": [
+          0,
+          0,
+          0,
+          "XYZ"
+        ],
+        "envMapIntensity": 1,
+        "reflectivity": 0.49999999999999983,
+        "transmission": 0,
+        "thickness": 0,
+        "attenuationDistance": 0,
+        "attenuationColor": 16777215,
+        "side": 2,
+        "blendColor": 0,
+        "fog": false,
+        "userData": {
+          "icon": "https://packs.ijewel3d.com/files/1_metal_rosegold_polished_ad37f22b2e.png",
+          "label": "Rose Gold",
+          "cloneId": "0_1_4_3",
+          "cloneCount": 0,
+          "gltfExtensions": {},
+          "_6b1395aa-194b-4458-bd49-22ec4592cfc2_version": 1,
+          "uuid": "8cea1d26-7b61-4464-85ce-ce48dc910df3"
+        }
+      },
+      "fcdf83a8-9b9e-4e03-9f7a-244a785c8c83": {
+        "metadata": {
+          "version": 4.6001,
+          "type": "DiamondMaterial",
+          "generator": "DiamondMaterial.toJSON"
+        },
+        "name": "White",
+        "uuid": "fcdf83a8-9b9e-4e03-9f7a-244a785c8c83",
+        "color": 16777215,
+        "envMapIntensity": 1.3,
+        "envMapIndex": 0,
+        "envMapRotationOffset": 0,
+        "envMapRotationOffsetX": 0,
+        "envMapRotationOffsetY": 0,
+        "envMapRotationOffsetZ": 0,
+        "dispersion": 0.01,
+        "squashFactor": 0.98,
+        "geometryFactor": 0.5,
+        "gammaFactor": 1,
+        "absorptionFactor": 1,
+        "reflectivity": 0.5,
+        "refractiveIndex": 2.6,
+        "rayBounces": 5,
+        "diamondOrientedEnvMap": 0,
+        "boostFactors": {
+          "x": 1,
+          "y": 1,
+          "z": 1,
+          "isVector3": true
+        },
+        "transmission": 0,
+        "isDiamondMaterialParameters": true,
+        "userData": {
+          "icon": "https://packs.ijewel3d.com/files/1_gem_diamond_white_1_9d63920a5a.png",
+          "label": "White",
+          "cloneId": "0_3_1",
+          "cloneCount": 0,
+          "separateEnvMapIntensity": true,
+          "uuid": "fcdf83a8-9b9e-4e03-9f7a-244a785c8c83"
+        },
+        "type": "DiamondMaterial"
+      },
+      "14b7eea5-2c8a-4edb-b9ce-bb6ae1288b22": {
+        "metadata": {
+          "version": 4.6001,
+          "type": "DiamondMaterial",
+          "generator": "DiamondMaterial.toJSON"
+        },
+        "name": "Emerald",
+        "uuid": "14b7eea5-2c8a-4edb-b9ce-bb6ae1288b22",
+        "color": 2285475,
+        "envMapIntensity": 1.3,
+        "envMapIndex": 0,
+        "envMapRotationOffset": 0,
+        "envMapRotationOffsetX": 0,
+        "envMapRotationOffsetY": 0,
+        "envMapRotationOffsetZ": 0,
+        "dispersion": 0.01,
+        "squashFactor": 0.98,
+        "geometryFactor": 0.5,
+        "gammaFactor": 1,
+        "absorptionFactor": 1,
+        "reflectivity": 0.5,
+        "refractiveIndex": 2.6,
+        "rayBounces": 5,
+        "diamondOrientedEnvMap": 0,
+        "boostFactors": {
+          "x": 1,
+          "y": 1,
+          "z": 1,
+          "isVector3": true
+        },
+        "transmission": 0,
+        "isDiamondMaterialParameters": true,
+        "userData": {
+          "icon": "https://packs.ijewel3d.com/files/1_gem_emerald_1_b2268c83eb.png",
+          "label": "Emerald",
+          "cloneId": "0_3_2",
+          "cloneCount": 0,
+          "separateEnvMapIntensity": true,
+          "uuid": "14b7eea5-2c8a-4edb-b9ce-bb6ae1288b22"
+        },
+        "type": "DiamondMaterial"
+      },
+      "42c6b6d9-1fd9-4127-a699-190b807039a3": {
+        "metadata": {
+          "version": 4.6001,
+          "type": "DiamondMaterial",
+          "generator": "DiamondMaterial.toJSON"
+        },
+        "name": "Ruby",
+        "uuid": "42c6b6d9-1fd9-4127-a699-190b807039a3",
+        "color": 14762614,
+        "envMapIntensity": 1.3,
+        "envMapIndex": 0,
+        "envMapRotationOffset": 0,
+        "envMapRotationOffsetX": 0,
+        "envMapRotationOffsetY": 0,
+        "envMapRotationOffsetZ": 0,
+        "dispersion": 0.01,
+        "squashFactor": 0.98,
+        "geometryFactor": 0.5,
+        "gammaFactor": 1,
+        "absorptionFactor": 1,
+        "reflectivity": 0.5,
+        "refractiveIndex": 2.6,
+        "rayBounces": 5,
+        "diamondOrientedEnvMap": 0,
+        "boostFactors": {
+          "x": 1,
+          "y": 1,
+          "z": 1,
+          "isVector3": true
+        },
+        "transmission": 0,
+        "isDiamondMaterialParameters": true,
+        "userData": {
+          "icon": "https://packs.ijewel3d.com/files/1_gem_ruby_1_288f497dbb.png",
+          "label": "Ruby",
+          "cloneId": "0_3_3",
+          "cloneCount": 0,
+          "separateEnvMapIntensity": true,
+          "uuid": "42c6b6d9-1fd9-4127-a699-190b807039a3"
+        },
+        "type": "DiamondMaterial"
+      }
+    },
+    "textures": {
+      "dd9a7fab-0abb-4195-9246-7a7336bb4a3a": {
+        "metadata": {
+          "version": 4.6,
+          "type": "Texture",
+          "generator": "Texture.toJSON"
+        },
+        "uuid": "dd9a7fab-0abb-4195-9246-7a7336bb4a3a",
+        "name": "https://packs.ijewel3d.com/files/env_gem_002_30251392af.exr",
+        "image": "72266f0d-d959-4ec8-afc4-3bf24bb184a0",
+        "mapping": 300,
+        "channel": 0,
+        "repeat": [
+          1,
+          1
+        ],
+        "offset": [
+          0,
+          0
+        ],
+        "center": [
+          0,
+          0
+        ],
+        "rotation": 0,
+        "wrap": [
+          1001,
+          1001
+        ],
+        "format": 1023,
+        "internalFormat": null,
+        "type": 1016,
+        "colorSpace": "srgb-linear",
+        "encoding": 3000,
+        "minFilter": 1008,
+        "magFilter": 1006,
+        "anisotropy": 1,
+        "flipY": false,
+        "generateMipmaps": true,
+        "premultiplyAlpha": false,
+        "unpackAlignment": 1,
+        "userData": {
+          "rootPath": "https://packs.ijewel3d.com/files/env_gem_002_30251392af.exr"
+        }
+      },
+      "7a493d73-c5c6-4203-bb91-c091d6278b82": {
+        "metadata": {
+          "version": 4.6,
+          "type": "Texture",
+          "generator": "Texture.toJSON"
+        },
+        "uuid": "7a493d73-c5c6-4203-bb91-c091d6278b82",
+        "name": "https://packs.ijewel3d.com/files/env_metal_001_d01c4504e0.hdr",
+        "image": "bd7bbf0f-054f-450a-8e05-64e594222195",
+        "mapping": 303,
+        "channel": 0,
+        "repeat": [
+          1,
+          1
+        ],
+        "offset": [
+          0,
+          0
+        ],
+        "center": [
+          0,
+          0
+        ],
+        "rotation": 0,
+        "wrap": [
+          1001,
+          1001
+        ],
+        "format": 1023,
+        "internalFormat": null,
+        "type": 1016,
+        "colorSpace": "srgb-linear",
+        "encoding": 3000,
+        "minFilter": 1008,
+        "magFilter": 1006,
+        "anisotropy": 1,
+        "flipY": true,
+        "generateMipmaps": true,
+        "premultiplyAlpha": false,
+        "unpackAlignment": 1,
+        "userData": {
+          "rootPath": "https://packs.ijewel3d.com/files/env_metal_001_d01c4504e0.hdr"
+        }
+      }
+    },
+    "images": {},
+    "shapes": {},
+    "skeletons": {},
+    "animations": {},
+    "extras": {}
+  }
+}
