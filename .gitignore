@@ -42,3 +42,5 @@ temp/
 .next/
 .nuxt/
 .svelte-kit/
+
+deploy/
