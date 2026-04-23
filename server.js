@@ -13,6 +13,8 @@ const path = require('path');
 const compression = require('compression');
 const helmet = require('helmet');
 const cors = require('cors');
+const ScheduleStore = require('./src/state/ScheduleStore');
+const roomManager = require('./src/state/RoomManager');
 
 // ─── Express App ────────────────────────────────────────────────
 const app = express();
@@ -45,23 +47,21 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 // ─── Routes ─────────────────────────────────────────────────────
 const pageRoutes = require('./src/routes/pages');
-const healthRoutes = require('./src/routes/health');
+const scheduleRoutes = require('./src/routes/schedule');
+const adminApiRoutes = require('./src/routes/adminRoutes');
+const healthRoutes   = require('./src/routes/health');
 const logRoutes = require('./src/routes/logs');
 const authRoutes = require('./src/routes/authRoutes');
 const iceRoutes = require('./src/routes/iceServers');
 
 app.use('/', pageRoutes);
-app.use('/health', healthRoutes);
+app.use('/api/schedule',  scheduleRoutes);
+app.use('/api/admin',     adminApiRoutes);
+app.use('/api/health',    healthRoutes);
 app.use('/metrics', healthRoutes);
 app.use('/api/auth', authRoutes);
-app.use('/api/call-history', authRoutes);
 app.use('/api/logs', logRoutes);
 app.use('/api/ice-servers', iceRoutes);
-
-// Schedule API
-const scheduleRoutes = require('./src/routes/schedule');
-const ScheduleStore  = require('./src/state/ScheduleStore');
-app.use('/api/schedule', scheduleRoutes);
 
 // Join link lookup (used by join.html)
 app.get('/api/schedule/join/:token', (req, res) => {

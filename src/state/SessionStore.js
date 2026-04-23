@@ -38,12 +38,16 @@ function _createSchema() {
     CREATE TABLE IF NOT EXISTS call_history (
       id            TEXT PRIMARY KEY DEFAULT (lower(hex(randomblob(16)))),
       room_id       TEXT NOT NULL,
-      user_name     TEXT,
-      user_phone    TEXT,
-      return_url    TEXT,
-      admin_user_id TEXT,
-      user_user_id  TEXT,
-      started_at    TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ','now')),
+      user_name      TEXT,
+      user_phone     TEXT,
+      looking_for    TEXT,
+      price_range    TEXT,
+      return_url     TEXT,
+      admin_user_id  TEXT,
+      admin_username TEXT,
+      admin_ip       TEXT,
+      user_user_id   TEXT,
+      started_at     TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ','now')),
       ended_at      TEXT,
       duration_secs INTEGER,
       end_reason    TEXT,
@@ -69,19 +73,23 @@ function _createSchema() {
 
 // ─── Call history ─────────────────────────────────────────────
 
-async function saveCallStart({ roomId, userData, adminUserId, userUserId }) {
+async function saveCallStart({ roomId, userData, adminUserId, adminUsername, adminIp, userUserId }) {
   if (!db) return null;
   try {
     const stmt = db.prepare(`
-      INSERT INTO call_history (room_id, user_name, user_phone, return_url, admin_user_id, user_user_id)
-      VALUES (?, ?, ?, ?, ?, ?)
+      INSERT INTO call_history (room_id, user_name, user_phone, looking_for, price_range, return_url, admin_user_id, admin_username, admin_ip, user_user_id)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `);
     const info = stmt.run(
       roomId,
       userData?.name || null,
       userData?.phone || null,
+      userData?.lookingFor || null,
+      userData?.priceRange || null,
       userData?.returnUrl || null,
       adminUserId || null,
+      adminUsername || null,
+      adminIp || null,
       userUserId || null
     );
     return info.lastInsertRowid;
@@ -112,7 +120,8 @@ async function getCallHistory({ limit = 50, offset = 0 } = {}) {
   if (!db) return [];
   try {
     return db.prepare(`
-      SELECT id, room_id, user_name, user_phone, return_url,
+      SELECT id, room_id, user_name, user_phone, looking_for, price_range, return_url,
+             admin_username, admin_ip,
              started_at, ended_at, duration_secs, end_reason
         FROM call_history
        ORDER BY started_at DESC

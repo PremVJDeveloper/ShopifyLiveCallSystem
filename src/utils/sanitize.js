@@ -24,6 +24,7 @@ function sanitizeUserData(data) {
     name:       sanitizeString(data.name, 100),
     phone:      sanitizeString(data.phone, 30),
     lookingFor: sanitizeString(data.lookingFor, 150),
+    priceRange: sanitizeString(data.priceRange, 100),
     returnUrl:  sanitizeUrl(data.returnUrl),
     source:     sanitizeString(data.source, 200),
     userAgent:  sanitizeString(data.userAgent, 500),

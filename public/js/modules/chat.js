@@ -9,6 +9,7 @@ let unreadCount = 0;
 let isPanelOpen = false;
 let senderName = 'You';
 let senderRole = 'user';
+let onSendCallback = null;
 
 // DOM refs — set after page load
 let panelEl, messagesEl, inputEl, sendBtnEl, unreadBadgeEl;
@@ -22,11 +23,12 @@ export function init({ panel, messagesContainer, input, sendBtn, unreadBadge, na
   senderName = name;
   senderRole = role;
 
-  dom.on(sendBtnEl, 'click', handleSend);
+  // Consolidate listeners
+  dom.on(sendBtnEl, 'click', performSend);
   dom.on(inputEl, 'keypress', (e) => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
-      handleSend();
+      performSend();
     }
   });
 }
@@ -109,40 +111,21 @@ export function addProductMessage(product, isMine = false) {
   scrollToBottom();
 }
 
-function handleSend() {
+function performSend() {
   const text = inputEl.value.trim().slice(0, MAX_MESSAGE_LENGTH);
   if (!text) return;
   inputEl.value = '';
   inputEl.style.height = 'auto';
   addMyMessage(text);
-  // Return the message for the caller to emit via socket
-  return text;
+  
+  if (onSendCallback) {
+    onSendCallback(text);
+  }
 }
 
 // Set a custom send handler that also handles socket emit
 export function setSendHandler(onSend) {
-  if (sendBtnEl) {
-    sendBtnEl.onclick = null;
-    dom.on(sendBtnEl, 'click', () => {
-      const text = inputEl.value.trim().slice(0, MAX_MESSAGE_LENGTH);
-      if (!text) return;
-      inputEl.value = '';
-      inputEl.style.height = 'auto';
-      addMyMessage(text);
-      onSend(text);
-    });
-  }
-  dom.on(inputEl, 'keypress', (e) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
-      e.preventDefault();
-      const text = inputEl.value.trim().slice(0, MAX_MESSAGE_LENGTH);
-      if (!text) return;
-      inputEl.value = '';
-      inputEl.style.height = 'auto';
-      addMyMessage(text);
-      onSend(text);
-    }
-  });
+  onSendCallback = onSend;
 }
 
 function addMessage({ type, text, name, timestamp }) {

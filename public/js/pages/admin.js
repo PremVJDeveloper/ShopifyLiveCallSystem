@@ -34,7 +34,8 @@ const todayNumEl     = document.getElementById('totalCallsToday');
 const callListEl     = document.getElementById('callList');
 const emptyQueueEl   = document.getElementById('emptyQueue');
 const activeRoomsEl  = document.getElementById('activeRoomsList');
-const historyListEl  = document.getElementById('historyList');
+const historyListEl  = document.getElementById('detailedHistoryList');
+const refreshHistoryBtn = document.getElementById('refreshHistoryBtn');
 const logoutBtn      = document.getElementById('logoutBtn');
 const soundToggle    = document.getElementById('soundToggle');
 const notifToggle    = document.getElementById('desktopNotificationToggle');
@@ -117,12 +118,17 @@ function addCallCard(entry) {
     ? `<span class="looking-for-badge">🔍 ${escapeHtml(lookingFor)}</span>`
     : '';
 
+  const priceRange = userData.priceRange ? userData.priceRange : '';
+  const priceBadge = priceRange
+    ? `<span class="price-range-badge">💰 ${escapeHtml(priceRange)}</span>`
+    : '';
+
   li.innerHTML = `
     <div class="call-card-info">
       <div class="caller-avatar">${(userData.name?.[0] || '?').toUpperCase()}</div>
       <div class="caller-details">
         <strong>${escapeHtml(userData.name || 'Unknown')}</strong>
-        ${lookingBadge}
+        <div class="caller-badges">${lookingBadge} ${priceBadge}</div>
         <span class="caller-meta">${escapeHtml(userData.phone || '')} · Waiting since ${waitSince}</span>
         ${userData.returnUrl ? `<a href="${escapeHtml(userData.returnUrl)}" target="_blank" class="caller-source">${new URL(userData.returnUrl).pathname}</a>` : ''}
       </div>
@@ -182,14 +188,51 @@ function addActiveRoom(roomId, room) {
 }
 
 function addHistoryEntry(roomId) {
-  if (!historyListEl) return;
-  const div = document.createElement('div');
-  div.className = 'history-entry';
-  div.innerHTML = `<span class="hist-icon">📋</span> Room ${roomId.substring(0, 8)}… ended at ${new Date().toLocaleTimeString()}`;
-  historyListEl.prepend(div);
-  if (historyListEl.children.length > 20) historyListEl.lastChild?.remove();
-  dom.show(historyListEl.parentElement);
+  // We now fetch the official history from the server
+  fetchHistory();
 }
+
+async function fetchHistory() {
+  if (!historyListEl) return;
+  try {
+    const res = await fetch('/api/admin/history', {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+    const data = await res.json();
+    if (!data.history) return;
+
+    historyListEl.innerHTML = '';
+    data.history.forEach(h => {
+      const tr = document.createElement('tr');
+      const start = new Date(h.started_at).toLocaleString('en-IN', {
+        day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit'
+      });
+      const duration = h.duration_secs
+        ? `${Math.floor(h.duration_secs / 60)}m ${h.duration_secs % 60}s`
+        : 'Ongoing/Aborted';
+
+      tr.innerHTML = `
+        <td>${start}</td>
+        <td>
+          <div style="font-weight:600;">${escapeHtml(h.user_name || '—')}</div>
+          <div style="font-size:11px;color:#888;">${escapeHtml(h.user_phone || '')}</div>
+        </td>
+        <td><span class="looking-for-badge">${escapeHtml(h.looking_for || 'General')}</span></td>
+        <td><span class="price-range-badge">${escapeHtml(h.price_range || '—')}</span></td>
+        <td>
+          <div style="font-size:12px;">👤 ${escapeHtml(h.admin_username || 'Agent')}</div>
+          <div style="font-size:10px;color:#888;">🌐 ${escapeHtml(h.admin_ip || '—')}</div>
+        </td>
+        <td style="font-size:12px;">${duration}</td>
+      `;
+      historyListEl.appendChild(tr);
+    });
+  } catch (err) {
+    console.error('Failed to fetch history', err);
+  }
+}
+
+refreshHistoryBtn?.addEventListener('click', fetchHistory);
 
 // ─── Notification helpers ──────────────────────────────────────
 function playNotification(entry) {
@@ -290,3 +333,4 @@ logoutBtn?.addEventListener('click', () => {
 
 // Initial state
 dom.show(emptyQueueEl);
+fetchHistory();

@@ -52,6 +52,7 @@ socket.on('connect', () => {
     name:       userData.name,
     phone:      userData.phone,
     lookingFor: userData.lookingFor,
+    priceRange: userData.priceRange,
     returnUrl:  userData.returnUrl,
     timestamp:  new Date().toISOString(),
     userAgent:  navigator.userAgent,

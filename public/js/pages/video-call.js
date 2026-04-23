@@ -327,7 +327,9 @@ socket.on('user-reconnected', (data) => {
   Chat.addSystemMessage('Peer reconnected');
 });
 
-socket.on('chat-message', (data) => Chat.addPeerMessage(data));
+socket.on('chat-message', (data) => {
+  Chat.addPeerMessage(data);
+});
 
 socket.on('product-shared', (data) => {
   if (data.sender !== socket.id) Chat.addProductMessage(data.product, false);

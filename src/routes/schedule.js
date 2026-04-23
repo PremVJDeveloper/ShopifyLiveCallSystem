@@ -11,7 +11,7 @@ const logger       = require('../utils/logger');
 // ── POST /api/schedule ───────────────────────────────────────────
 router.post('/', async (req, res) => {
   try {
-    const { name, phone, email, lookingFor, scheduledAt, returnUrl } = req.body;
+    const { name, phone, email, lookingFor, priceRange, scheduledAt, returnUrl } = req.body;
 
     // Validate
     if (!name || name.trim().length < 2) {
@@ -37,6 +37,7 @@ router.post('/', async (req, res) => {
       phone: phone?.trim() || null,
       email: email?.trim() || null,
       lookingFor: lookingFor?.trim() || null,
+      priceRange: priceRange?.trim() || null,
       scheduledAt: dt.toISOString(),
       returnUrl: returnUrl || null,
     });
@@ -48,9 +49,17 @@ router.post('/', async (req, res) => {
     // Fire emails in background (don't block response)
     Promise.all([
       record.email
-        ? mailer.sendCustomerConfirmation({ name: record.name, email: record.email, scheduledAt: record.scheduledAt, joinUrl, lookingFor: record.lookingFor || record.looking_for })
+        ? mailer.sendCustomerConfirmation({ 
+            name: record.name, email: record.email, scheduledAt: record.scheduledAt, joinUrl, 
+            lookingFor: record.lookingFor || record.looking_for, 
+            priceRange: record.priceRange || record.price_range 
+          })
         : Promise.resolve(),
-      mailer.sendAdminNotification({ name: record.name, phone: record.phone, email: record.email, scheduledAt: record.scheduledAt, joinUrl, lookingFor: record.lookingFor || record.looking_for }),
+      mailer.sendAdminNotification({ 
+        name: record.name, phone: record.phone, email: record.email, scheduledAt: record.scheduledAt, joinUrl, 
+        lookingFor: record.lookingFor || record.looking_for,
+        priceRange: record.priceRange || record.price_range 
+      }),
     ]).catch(err => logger.error('Email send error', { error: err.message }));
 
     return res.json({ token: record.token, joinUrl, scheduledAt: record.scheduledAt });

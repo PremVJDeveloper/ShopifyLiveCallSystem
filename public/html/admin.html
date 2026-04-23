@@ -115,12 +115,27 @@
           </div>
 
           <!-- Call history -->
-          <div class="section-card" id="historySection" style="display:none;">
+          <div class="section-card">
             <div class="section-header">
-              <span class="section-title">📋 Recent history</span>
+              <span class="section-title">📋 Call History & Audit Log</span>
+              <button id="refreshHistoryBtn" class="test-btn">🔄 Refresh</button>
             </div>
-            <div class="section-body">
-              <div id="historyList"></div>
+            <div class="section-body" style="overflow-x: auto;">
+              <table class="history-table">
+                <thead>
+                  <tr>
+                    <th>Date / Time</th>
+                    <th>Customer</th>
+                    <th>Category</th>
+                    <th>Price Range</th>
+                    <th>Admin (IP)</th>
+                    <th>Duration</th>
+                  </tr>
+                </thead>
+                <tbody id="detailedHistoryList">
+                  <!-- History rows will be injected here -->
+                </tbody>
+              </table>
             </div>
           </div>
         </div>

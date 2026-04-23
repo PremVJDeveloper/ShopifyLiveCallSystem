@@ -36,18 +36,31 @@
         </div>
       </div>
 
-      <!-- What are you looking for? -->
-      <div class="field">
-        <label for="lookingFor">What are you looking for?</label>
-        <select id="lookingFor" class="input">
-          <option value="">— Select a category —</option>
-          <option value="Rings">💍 Rings</option>
-          <option value="Pendant">📿 Pendant</option>
-          <option value="Earrings">✨ Earrings</option>
-          <option value="MangalSutras">🪢 MangalSutras</option>
-          <option value="Necklaces">💎 Necklaces</option>
-          <option value="Other">🔍 Other</option>
-        </select>
+      <!-- What are you looking for? + Price Range -->
+      <div class="field-row">
+        <div class="field">
+          <label for="lookingFor">Product Category</label>
+          <select id="lookingFor" class="input">
+            <option value="">— Select Category —</option>
+            <option value="Rings">💍 Rings</option>
+            <option value="Pendant">📿 Pendant</option>
+            <option value="Earrings">✨ Earrings</option>
+            <option value="MangalSutras">🪢 MangalSutras</option>
+            <option value="Necklaces">💎 Necklaces</option>
+            <option value="Other">🔍 Other</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="priceRange">Price Range</label>
+          <select id="priceRange" class="input">
+            <option value="">— Select Range —</option>
+            <option value="Under 20k">Under ₹20,000</option>
+            <option value="20k - 50k">₹20k - ₹50k</option>
+            <option value="50k - 1L">₹50k - ₹1 Lakh</option>
+            <option value="1L - 2L">₹1L - ₹2 Lakhs</option>
+            <option value="Above 2L">Above ₹2 Lakhs</option>
+          </select>
+        </div>
       </div>
 
       <!-- Other: free text (shown when 'Other' selected) -->

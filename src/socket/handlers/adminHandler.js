@@ -61,6 +61,8 @@ module.exports = function adminHandler(io, socket) {
     queueManager.remove(queueSocketId);
 
     const adminUserId = socket.handshake.query.userId || socket.id;
+    const adminUsername = socket.adminPayload?.username || 'Support Agent';
+    const adminIp = socket.handshake.address || 'unknown';
     const userUserId = entry.userId || queueSocketId;
     const userData = entry.userData;
 
@@ -128,6 +130,8 @@ module.exports = function adminHandler(io, socket) {
       roomId,
       userData,
       adminUserId,
+      adminUsername,
+      adminIp,
       userUserId,
     });
     SessionStore.logAdminAction({
@@ -135,7 +139,7 @@ module.exports = function adminHandler(io, socket) {
       adminUserId,
       targetRoomId: roomId,
       targetUserId: userUserId,
-      details: { userName: userData?.name },
+      details: { userName: userData?.name, adminUsername, adminIp },
     });
 
     logger.info('Call accepted', { roomId, adminId: socket.id, userSocketId: queueSocketId });

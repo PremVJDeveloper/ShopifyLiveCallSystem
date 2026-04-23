@@ -35,6 +35,7 @@ function _createSchema() {
       phone        TEXT,
       email        TEXT,
       looking_for  TEXT,
+      price_range  TEXT,
       scheduled_at TEXT NOT NULL,
       return_url   TEXT,
       status       TEXT NOT NULL DEFAULT 'pending',
@@ -52,20 +53,24 @@ function _createSchema() {
     db.exec(`ALTER TABLE scheduled_calls ADD COLUMN looking_for TEXT`);
     logger.info('ScheduleStore: migrated — added looking_for column');
   }
+  if (!cols.includes('price_range')) {
+    db.exec(`ALTER TABLE scheduled_calls ADD COLUMN price_range TEXT`);
+    logger.info('ScheduleStore: migrated — added price_range column');
+  }
 }
 
 /**
  * Create a new scheduled call.
  * Returns the newly created record.
  */
-function createSchedule({ name, phone, email, lookingFor, scheduledAt, returnUrl }) {
+function createSchedule({ name, phone, email, lookingFor, priceRange, scheduledAt, returnUrl }) {
   if (!db) throw new Error('Database not available');
   const token = uuidv4();
   db.prepare(`
-    INSERT INTO scheduled_calls (token, name, phone, email, looking_for, scheduled_at, return_url)
-    VALUES (?, ?, ?, ?, ?, ?, ?)
-  `).run(token, name, phone || null, email || null, lookingFor || null, scheduledAt, returnUrl || null);
-  return { token, name, phone, email, lookingFor: lookingFor || null, scheduledAt, returnUrl };
+    INSERT INTO scheduled_calls (token, name, phone, email, looking_for, price_range, scheduled_at, return_url)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+  `).run(token, name, phone || null, email || null, lookingFor || null, priceRange || null, scheduledAt, returnUrl || null);
+  return { token, name, phone, email, lookingFor: lookingFor || null, priceRange: priceRange || null, scheduledAt, returnUrl };
 }
 
 /**

@@ -67,7 +67,7 @@ async function send({ to, subject, html, text }) {
 /**
  * Send confirmation email to the customer.
  */
-async function sendCustomerConfirmation({ name, email, scheduledAt, joinUrl, lookingFor }) {
+async function sendCustomerConfirmation({ name, email, scheduledAt, joinUrl, lookingFor, priceRange }) {
   const dt = new Date(scheduledAt);
   const fmt = dt.toLocaleString('en-IN', {
     weekday: 'long', day: 'numeric', month: 'long',
@@ -98,7 +98,8 @@ async function sendCustomerConfirmation({ name, email, scheduledAt, joinUrl, loo
       <div style="background:rgba(124,58,237,0.1);border:1px solid rgba(124,58,237,0.3);border-radius:10px;padding:16px;margin-bottom:24px;text-align:center;">
         <div style="font-size:12px;color:#a78bfa;text-transform:uppercase;letter-spacing:0.6px;margin-bottom:6px;">Scheduled Time</div>
         <div style="font-size:18px;font-weight:700;color:#fff;">📅 ${fmt} IST</div>
-        ${lookingFor ? `<div style="margin-top:8px;font-size:13px;color:#a78bfa;">Looking for: <strong>${lookingFor}</strong></div>` : ''}
+        ${lookingFor ? `<div style="margin-top:8px;font-size:13px;color:#a78bfa;">Category: <strong>${lookingFor}</strong></div>` : ''}
+        ${priceRange ? `<div style="margin-top:4px;font-size:13px;color:#a78bfa;">Price Range: <strong>${priceRange}</strong></div>` : ''}
       </div>
 
       <a href="${joinUrl}" style="display:block;background:linear-gradient(135deg,#7c3aed,#6d28d9);color:#fff;text-decoration:none;text-align:center;padding:16px;border-radius:10px;font-size:15px;font-weight:700;margin-bottom:16px;">
@@ -127,7 +128,7 @@ async function sendCustomerConfirmation({ name, email, scheduledAt, joinUrl, loo
 /**
  * Send notification email to admin + developer when a call is scheduled.
  */
-async function sendAdminNotification({ name, phone, email, scheduledAt, joinUrl, lookingFor }) {
+async function sendAdminNotification({ name, phone, email, scheduledAt, joinUrl, lookingFor, priceRange }) {
   const dt = new Date(scheduledAt);
   const fmt = dt.toLocaleString('en-IN', {
     weekday: 'long', day: 'numeric', month: 'long',
@@ -162,7 +163,8 @@ async function sendAdminNotification({ name, phone, email, scheduledAt, joinUrl,
         <tr><td style="padding:8px 0;color:#64748b;width:100px;">Name</td><td style="padding:8px 0;font-weight:600;">${name}</td></tr>
         <tr><td style="padding:8px 0;color:#64748b;">Phone</td><td style="padding:8px 0;">${phone || '—'}</td></tr>
         <tr><td style="padding:8px 0;color:#64748b;">Email</td><td style="padding:8px 0;">${email || '—'}</td></tr>
-        ${lookingFor ? `<tr><td style="padding:8px 0;color:#64748b;">Looking For</td><td style="padding:8px 0;"><span style="background:#ede9fe;color:#7c3aed;padding:2px 8px;border-radius:999px;font-size:12px;font-weight:600;">${lookingFor}</span></td></tr>` : ''}
+        ${lookingFor ? `<tr><td style="padding:8px 0;color:#64748b;">Category</td><td style="padding:8px 0;"><span style="background:#ede9fe;color:#7c3aed;padding:2px 8px;border-radius:999px;font-size:12px;font-weight:600;">${lookingFor}</span></td></tr>` : ''}
+        ${priceRange ? `<tr><td style="padding:8px 0;color:#64748b;">Price Range</td><td style="padding:8px 0;"><span style="background:#fef3c7;color:#d97706;padding:2px 8px;border-radius:999px;font-size:12px;font-weight:600;">${priceRange}</span></td></tr>` : ''}
         <tr><td style="padding:8px 0;color:#64748b;">Time</td><td style="padding:8px 0;font-weight:600;color:#7c3aed;">${fmt} IST</td></tr>
         <tr><td style="padding:8px 0;color:#64748b;">Join Link</td><td style="padding:8px 0;"><a href="${joinUrl}" style="color:#7c3aed;">${joinUrl}</a></td></tr>
       </table>

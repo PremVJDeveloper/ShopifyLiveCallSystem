@@ -28,20 +28,16 @@ module.exports = function chatHandler(io, socket) {
       senderName: cleanName,
       senderRole: senderRole === 'admin' ? 'admin' : 'user',
       timestamp: new Date().toISOString(),
-      socketId: socket.id,
     };
+
+    // Ensure socket is in the room
+    if (!socket.rooms.has(room)) {
+      socket.join(room);
+    }
 
     // Broadcast to room (excluding sender)
     socket.to(room).emit('chat-message', messageData);
 
-    // Confirm to sender
-    socket.emit('chat-message-sent', { ...messageData, status: 'sent' });
-
-    logger.debug('Chat message', {
-      room,
-      from: socket.id,
-      role: senderRole,
-      length: cleanMessage.length,
-    });
+    logger.debug('Chat message', { room, from: socket.id, role: senderRole });
   });
 };

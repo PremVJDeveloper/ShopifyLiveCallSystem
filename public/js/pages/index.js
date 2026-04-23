@@ -7,6 +7,7 @@ const nameEl        = document.getElementById('userName');
 const phoneEl       = document.getElementById('userPhone');
 const emailEl       = document.getElementById('userEmail');
 const lookingForEl  = document.getElementById('lookingFor');
+const priceRangeEl  = document.getElementById('priceRange');
 const otherField    = document.getElementById('otherField');
 const otherEl       = document.getElementById('lookingForOther');
 const emailWrapper  = document.getElementById('emailFieldWrapper');
@@ -103,10 +104,11 @@ joinNowBtn.addEventListener('click', () => {
   const name = nameEl.value.trim();
   const phone = phoneEl.value.trim();
   const lookingFor = getLookingFor();
+  const priceRange = priceRangeEl?.value || '';
   const returnUrl = params.get('return_url') || 'https://vaama.co';
 
   setLoading(joinNowBtn, true);
-  const data = btoa(JSON.stringify({ name, phone, lookingFor, returnUrl }));
+  const data = btoa(JSON.stringify({ name, phone, lookingFor, priceRange, returnUrl }));
   setTimeout(() => {
     window.location.href = `/call-request?data=${encodeURIComponent(data)}`;
   }, 400);
@@ -127,6 +129,7 @@ scheduleBtn.addEventListener('click', async () => {
   const phone     = phoneEl.value.trim();
   const email     = emailEl.value.trim();
   const lookingFor = getLookingFor();
+  const priceRange = priceRangeEl?.value || '';
   const returnUrl = params.get('return_url') || 'https://vaama.co';
 
   setLoading(scheduleBtn, true);
@@ -135,7 +138,7 @@ scheduleBtn.addEventListener('click', async () => {
     const res = await fetch('/api/schedule', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ name, phone, email, lookingFor, scheduledAt: scheduledAt.toISOString(), returnUrl }),
+      body: JSON.stringify({ name, phone, email, lookingFor, priceRange, scheduledAt: scheduledAt.toISOString(), returnUrl }),
     });
 
     const json = await res.json();

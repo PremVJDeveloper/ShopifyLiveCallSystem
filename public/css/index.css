@@ -116,8 +116,13 @@ body::before {
 }
 
 /* ── Form fields ─────────────────────────────────────────────*/
+.field-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+}
 .field {
-  margin-bottom: 16px;
+  margin-bottom: 24px;
 }
 .field label {
   display: block;
@@ -127,11 +132,6 @@ body::before {
   text-transform: uppercase;
   letter-spacing: 0.6px;
   margin-bottom: 6px;
-}
-.field-row {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 12px;
 }
 .input {
   width: 100%;
