@@ -44,24 +44,33 @@ lookingForEl?.addEventListener('change', () => {
 });
 
 // ── Admin Availability ───────────────────────────────────────────
-async function checkAdminStatus() {
+async function getAdminStatus() {
   try {
     const res = await fetch('/api/admin-status');
     const { adminOnline } = await res.json();
+    return !!adminOnline;
+  } catch (err) {
+    console.error('Failed to check admin status:', err);
+    return false;
+  }
+}
+
+async function updateJoinNowVisibility() {
+  const adminOnline = await getAdminStatus();
+  if (!adminOnline) {
+    joinNowBtn.style.display = 'none';
     
-    if (!adminOnline) {
-      joinNowBtn.style.display = 'none';
+    // Avoid duplicate banners
+    if (!document.querySelector('.offline-banner')) {
       const offlineMsg = document.createElement('div');
       offlineMsg.className = 'offline-banner';
       offlineMsg.innerHTML = '🕒 Experts are currently offline. Please schedule a call below.';
       joinNowBtn.parentNode.insertBefore(offlineMsg, joinNowBtn);
     }
-  } catch (err) {
-    console.error('Failed to check admin status:', err);
   }
 }
 
-checkAdminStatus();
+updateJoinNowVisibility();
 
 // Helper: get final lookingFor value
 function getLookingFor() {
@@ -155,7 +164,7 @@ scheduleBtn.addEventListener('click', async () => {
 });
 
 // ── Confirmation UI ─────────────────────────────────────────────
-function _showConfirmation(data, scheduledAt, name) {
+async function _showConfirmation(data, scheduledAt, name) {
   mainCard.style.display = 'none';
   confirmCard.style.display = 'block';
 
@@ -168,23 +177,32 @@ function _showConfirmation(data, scheduledAt, name) {
   });
   confirmBadge.textContent = `📅 ${fmt}`;
 
-  // If scheduled within 15 min → show "Join Now" immediately
+  // If scheduled within 15 min → check if admin online
   const minsFromNow = (scheduledAt - Date.now()) / 60000;
   if (minsFromNow <= 16) {
-    joinNowConfirm.style.display = 'flex';
-    joinNowConfirm.addEventListener('click', () => { window.location.href = link; });
-    confirmSub.textContent = `${name}, your call is ready! Click below to join, or use your email link.`;
+    const adminOnline = await getAdminStatus();
+    
+    if (adminOnline) {
+      joinNowConfirm.style.display = 'flex';
+      joinNowConfirm.onclick = () => { window.location.href = link; };
+      confirmSub.textContent = `${name}, your call is ready! Click below to join, or use your email link.`;
+    } else {
+      joinNowConfirm.style.display = 'none';
+      confirmSub.textContent = `${name}, your call is scheduled. An expert will be available shortly to start the call.`;
+    }
   } else {
+    joinNowConfirm.style.display = 'none';
     confirmSub.textContent = `We've sent a confirmation to your email with joining instructions.`;
   }
 
-  copyBtn.addEventListener('click', () => {
+  copyBtn.onclick = () => {
     navigator.clipboard.writeText(link).then(() => {
       copyBtn.textContent = 'Copied!';
       setTimeout(() => { copyBtn.textContent = 'Copy'; }, 2000);
     });
-  });
+  };
 }
+
 
 scheduleAnother.addEventListener('click', () => {
   confirmCard.style.display = 'none';

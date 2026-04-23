@@ -104,7 +104,17 @@
       }
     }
 
-    function evaluate(data) {
+    async function getAdminStatus() {
+      try {
+        const res = await fetch('/api/admin-status');
+        const { adminOnline } = await res.json();
+        return !!adminOnline;
+      } catch {
+        return false;
+      }
+    }
+
+    async function evaluate(data) {
       const now      = Date.now();
       const schedAt  = new Date(data.scheduled_at).getTime();
       const minsLeft = (schedAt - now) / 60000;
@@ -119,12 +129,25 @@
       });
 
       if (minsLeft <= 15) {
-        // ACTIVE — can join now
-        document.getElementById('activeBadge').textContent = `📅 ${fmt} IST`;
-        document.getElementById('activeMsg').textContent =
-          `Hi ${data.name}! Your call${minsLeft > 0 ? ' starts in ' + Math.ceil(minsLeft) + ' min' : ' is starting now'}.`;
-        document.getElementById('joinCallBtn').addEventListener('click', () => joinCall(data));
-        showState('active');
+        // ACTIVE — check if admin online
+        const adminOnline = await getAdminStatus();
+        
+        if (adminOnline) {
+          document.getElementById('activeBadge').textContent = `📅 ${fmt} IST`;
+          document.getElementById('activeMsg').textContent =
+            `Hi ${data.name}! Your call${minsLeft > 0 ? ' starts in ' + Math.ceil(minsLeft) + ' min' : ' is starting now'}.`;
+          document.getElementById('joinCallBtn').onclick = () => joinCall(data);
+          showState('active');
+        } else {
+          // Admin offline but call time is close/now
+          document.getElementById('activeBadge').textContent = `📅 ${fmt} IST`;
+          document.getElementById('activeMsg').textContent = 
+            `Hi ${data.name}! Your expert is logging in now. Please wait a moment for the Join button to appear.`;
+          document.getElementById('joinCallBtn').style.display = 'none';
+          showState('active');
+          // Refresh every 10 seconds to check for admin
+          setTimeout(() => window.location.reload(), 10000);
+        }
       } else {
         // TOO EARLY — show countdown
         document.getElementById('earlyBadge').textContent = `📅 ${fmt} IST`;
