@@ -3,8 +3,11 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Vaama Live — Live Jewellery Consultation</title>
+  <title>Vaama Live &#8212; Live Jewellery Consultation</title>
   <meta name="description" content="Connect with a Vaama jewellery expert via live video call. Get personalised advice instantly or schedule for a convenient time." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="/css/index.css" />
 </head>
 <body>
@@ -16,8 +19,10 @@
         <span class="dot"></span>
         Vaama Live Support
       </div>
-      <h1>Talk to a Jewellery Expert</h1>
-      <p>Get live personalised advice on our collections — instantly or scheduled at your convenience.</p>
+      <div>
+        <h1>Talk to a Jewellery Expert</h1>
+        <p>Get personal guidance on any piece, any question &#8212; live on video, at your pace.</p>
+      </div>
     </header>
 
     <!-- Main form card -->
@@ -36,29 +41,29 @@
         </div>
       </div>
 
-      <!-- What are you looking for? + Price Range -->
+      <!-- Product Category + Price Range -->
       <div class="field-row">
         <div class="field">
           <label for="lookingFor">Product Category</label>
           <select id="lookingFor" class="input">
-            <option value="">— Select Category —</option>
-            <option value="Rings">💍 Rings</option>
-            <option value="Pendant">📿 Pendant</option>
-            <option value="Earrings">✨ Earrings</option>
-            <option value="MangalSutras">🪢 MangalSutras</option>
-            <option value="Necklaces">💎 Necklaces</option>
-            <option value="Other">🔍 Other</option>
+            <option value="">Select Category</option>
+            <option value="Rings">Rings</option>
+            <option value="Pendant">Pendant</option>
+            <option value="Earrings">Earrings</option>
+            <option value="MangalSutras">MangalSutras</option>
+            <option value="Necklaces">Necklaces</option>
+            <option value="Other">Other</option>
           </select>
         </div>
         <div class="field">
           <label for="priceRange">Price Range</label>
           <select id="priceRange" class="input">
-            <option value="">— Select Range —</option>
-            <option value="Under 20k">Under ₹20,000</option>
-            <option value="20k - 50k">₹20k - ₹50k</option>
-            <option value="50k - 1L">₹50k - ₹1 Lakh</option>
-            <option value="1L - 2L">₹1L - ₹2 Lakhs</option>
-            <option value="Above 2L">Above ₹2 Lakhs</option>
+            <option value="">Select Price Range</option>
+            <option value="Under 20k">Under &#8377;20,000</option>
+            <option value="20k - 50k">&#8377;20k &#8211; &#8377;50k</option>
+            <option value="50k - 1L">&#8377;50k &#8211; &#8377;1 Lakh</option>
+            <option value="1L - 2L">&#8377;1L &#8211; &#8377;2 Lakhs</option>
+            <option value="Above 2L">Above &#8377;2 Lakhs</option>
           </select>
         </div>
       </div>
@@ -66,32 +71,31 @@
       <!-- Other: free text (shown when 'Other' selected) -->
       <div class="field" id="otherField" style="display:none;">
         <label for="lookingForOther">Please describe what you're looking for</label>
-        <input id="lookingForOther" class="input" type="text" placeholder="e.g. Custom bangle, gold chain…" />
+        <input id="lookingForOther" class="input" type="text" placeholder="e.g. Custom bangle, gold chain..." />
       </div>
 
       <!-- Join Now -->
       <button class="btn btn-primary" id="joinNowBtn">
-        <span class="btn-text">📹 Join Live Now</span>
+        <span class="btn-text">Connect with an Expert Now</span>
         <span class="spinner"></span>
       </button>
 
-
       <!-- Divider -->
-      <div class="divider">or schedule a call</div>
+      <div class="divider">Or Schedule a call for later</div>
 
       <!-- Schedule chips -->
       <div class="schedule-chips">
         <div class="chip" data-value="15" id="chip15">
-          <span class="chip-icon">⚡</span>In 15 min
+          <span class="chip-icon">&#9203;</span>In 15 Mins
         </div>
         <div class="chip" data-value="30" id="chip30">
-          <span class="chip-icon">🕐</span>In 30 min
+          <span class="chip-icon">&#9203;</span>In 30 Mins
         </div>
         <div class="chip" data-value="60" id="chip60">
-          <span class="chip-icon">🕑</span>In 1 hr
+          <span class="chip-icon">&#9203;</span>In 1 Hour
         </div>
         <div class="chip" data-value="custom" id="chipCustom">
-          <span class="chip-icon">📅</span>Custom
+          <span class="chip-icon">&#128197;</span>Choose Time
         </div>
       </div>
 
@@ -109,38 +113,44 @@
 
       <!-- Email (shown when any schedule selected) -->
       <div class="field email-field" id="emailFieldWrapper">
-        <label for="userEmail">Your Email <span style="color:var(--accent-light)">(for confirmation)</span></label>
-        <input id="userEmail" class="input" type="email" placeholder="you@example.com" autocomplete="email" />
+        <label for="userEmail">Your Email <span style="font-weight:400;color:var(--placeholder);font-size:11px;">(For Confirmation link)</span></label>
+        <input id="userEmail" class="input" type="email" placeholder="you@gmail.com" autocomplete="email" />
         <div class="field-error" id="emailError">Please enter a valid email</div>
       </div>
 
       <!-- Schedule button (shown when schedule selected) -->
       <button class="btn btn-outline" id="scheduleBtn" style="display:none;">
-        <span class="btn-text">📅 Confirm Schedule</span>
+        <span class="btn-text">Confirm Schedule</span>
         <span class="spinner"></span>
       </button>
+      <!-- Trust indicators -->
+      <div class="trust-row">
+        <div class="trust-item"><span class="icon trust-icon-video"></span> HD Video Call</div>
+        <div class="trust-item"><span class="icon trust-icon-download"></span> No Download Needed</div>
+        <div class="trust-item"><span class="icon trust-icon-lock"></span> Secure &amp; Private</div>
+      </div>
 
     </div>
 
     <!-- Confirmation card (shown after scheduling) -->
     <div class="card" id="confirmCard">
-      <div class="confirm-icon">✅</div>
+      <div class="confirm-icon">&#9989;</div>
       <div class="confirm-title">Call Scheduled!</div>
       <div class="confirm-subtitle" id="confirmSubtitle">
         We've sent a confirmation email with your join link.
       </div>
 
       <div class="schedule-time-badge" id="confirmTimeBadge">
-        📅 Scheduled for —
+        &#128197; Scheduled for &#8212;
       </div>
 
       <div class="join-link-box">
-        <span class="join-link-url" id="joinLinkUrl">—</span>
+        <span class="join-link-url" id="joinLinkUrl">&#8212;</span>
         <button class="copy-btn" id="copyLinkBtn">Copy</button>
       </div>
 
       <button class="btn btn-primary" id="joinNowConfirmBtn" style="display:none;">
-        🚀 Join Now
+        &#128640; Join Now
       </button>
 
       <button class="btn btn-outline" id="scheduleAnotherBtn" style="margin-top:10px;">
@@ -148,14 +158,7 @@
       </button>
     </div>
 
-    <!-- Trust indicators -->
-    <div class="trust-row">
-      <div class="trust-item"><span class="icon">🔒</span> Secure & Private</div>
-      <div class="trust-item"><span class="icon">📹</span> HD Video Call</div>
-      <div class="trust-item"><span class="icon">⚡</span> No Download Needed</div>
-    </div>
-
-  </div>
+  </div><!-- /.page-wrapper -->
 
   <script type="module" src="/js/pages/index.js"></script>
 </body>
