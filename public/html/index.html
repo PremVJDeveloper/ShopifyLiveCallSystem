@@ -134,28 +134,40 @@
 
     <!-- Confirmation card (shown after scheduling) -->
     <div class="card" id="confirmCard">
-      <div class="confirm-icon">&#9989;</div>
-      <div class="confirm-title">Call Scheduled!</div>
+      <!-- Success icon: green circle + checkmark SVG -->
+      <div class="confirm-icon">
+        <svg width="23" height="17" viewBox="0 0 23 17" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <path d="M2 8L8.5 14.5L21 2" stroke="#3DBE8C" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+
+      <div class="confirm-title">Call Scheduled</div>
       <div class="confirm-subtitle" id="confirmSubtitle">
-        We've sent a confirmation email with your join link.
+        We have sent a confirmation to your email with joining details
       </div>
 
+      <!-- Date & time badge -->
       <div class="schedule-time-badge" id="confirmTimeBadge">
-        &#128197; Scheduled for &#8212;
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <rect x="2" y="4" width="16" height="14" rx="2" stroke="#384C75" stroke-width="1.5"/>
+          <path d="M2 8h16" stroke="#384C75" stroke-width="1.5"/>
+          <path d="M6 2v3M14 2v3" stroke="#384C75" stroke-width="1.5" stroke-linecap="round"/>
+        </svg>
+        <span id="confirmTimeBadgeText">Friday, 17th April at 01:00 pm</span>
       </div>
 
+      <!-- Join link box -->
       <div class="join-link-box">
         <span class="join-link-url" id="joinLinkUrl">&#8212;</span>
         <button class="copy-btn" id="copyLinkBtn">Copy</button>
       </div>
 
-      <button class="btn btn-primary" id="joinNowConfirmBtn" style="display:none;">
-        &#128640; Join Now
-      </button>
-
-      <button class="btn btn-outline" id="scheduleAnotherBtn" style="margin-top:10px;">
-        Schedule Another
-      </button>
+      <!-- Two side-by-side buttons -->
+      <div class="confirm-btn-row">
+        <button class="btn btn-outline" id="scheduleAnotherBtn">Reschedule Call</button>
+        <button class="btn btn-primary" id="joinNowConfirmBtn" style="display:none;">&#128640; Join Now</button>
+        <a href="https://vaama.co" class="btn btn-primary" id="backToVaamaBtn">Back to Vaama</a>
+      </div>
     </div>
 
   </div><!-- /.page-wrapper -->

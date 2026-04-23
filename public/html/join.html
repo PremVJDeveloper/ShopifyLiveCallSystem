@@ -4,16 +4,148 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Join Your Vaama Live Call</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="/css/index.css" />
   <style>
+    /* ── Join page overrides ─────────────────────────────── */
+
+    /* Re-scope page-header gap for this layout — 80px between badge and title */
+    .page-header {
+      gap: 80px;
+      margin-bottom: 0;
+    }
+    .page-header > div {
+      gap: 12px;
+    }
+    .page-header h1 {
+      font-size: clamp(28px, 4vw, 38px);
+      font-weight: 600;
+      line-height: 1.2;
+    }
+    .page-header p {
+      font-size: 20px;
+      color: #465F9F;
+      margin-bottom: 0;
+    }
+
+    /* ── Card shared ─────────────────────────────────────── */
     .join-state { text-align: center; }
-    .countdown-ring {
-      width: 80px; height: 80px;
+
+    /* Override card to match Figma (450px, padding 24px 40px) */
+    .card {
+      max-width: 450px;
+      padding: 24px 40px;
+      border: 1px solid #C1CDE1;
+      box-shadow: 0px 4px 20px rgba(88, 120, 204, 0.10);
+    }
+
+    /* ── Agent avatar icon ───────────────────────────────── */
+    .agent-avatar {
+      width: 65px;
+      height: 65px;
       border-radius: 50%;
-      background: conic-gradient(var(--accent) var(--pct, 0%), rgba(255,255,255,.06) 0%);
-      display: flex; align-items: center; justify-content: center;
+      background: #CFEBE3;
+      border: 1px solid #85DEBB;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 12px;
+    }
+    .agent-avatar svg {
+      width: 27.5px;
+      height: 27.5px;
+    }
+
+    /* ── confirm-title (re-use existing class, adjust values) */
+    .confirm-title {
+      font-family: 'HeadstockSans', Georgia, serif;
+      font-size: 24px;
+      font-weight: 600;
+      line-height: 28px;
+      color: #2B3C59;
+      margin-bottom: 8px;
+      text-align: center;
+    }
+    .confirm-subtitle {
+      font-size: 12px;
+      font-weight: 500;
+      color: #7C95C0;
+      text-align: center;
+      margin-bottom: 0;
+    }
+    .confirm-subtitle strong {
+      font-weight: 700;
+      color: inherit;
+    }
+    .confirm-subtitle .highlight {
+      font-weight: 700;
+    }
+
+    /* ── badge-time (date+time pill) ─────────────────────── */
+    .badge-time {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      justify-content: center;
+      gap: clamp(4px, 1vw, 8px);
+      width: 100%;
+      padding: 11px 20px;
+      background: #F7F9FC;
+      border: 1px solid #D0D9E8;
+      border-radius: 5px;
+      /* Responsive font: stays on one line, min 12px */
+      font-size: clamp(12px, 2vw, 16px);
+      font-weight: 600;
+      color: #384C75;
+      margin-bottom: 0;
+      box-sizing: border-box;
+      white-space: nowrap;
+      overflow: hidden;
+    }
+    .badge-time .badge-dot {
+      width: 3px;
+      height: 3px;
+      border-radius: 50%;
+      background: #384C75;
+      flex-shrink: 0;
+    }
+    .badge-time svg {
+      width: clamp(16px, 1.5vw, 20px);
+      height: clamp(16px, 1.5vw, 20px);
+      flex-shrink: 0;
+    }
+
+    /* Override btn-primary for Join Now */
+    .join-state .btn.btn-primary {
+      width: 100%;
+      max-width: 310px;
+      height: 47px;
+      background: #28365B;
+      border-radius: 5px;
+      font-size: 14px;
+      font-weight: 600;
+      color: #fff;
+      border: 1px solid #D0D9E8;
+      padding: 0;
+    }
+    .join-state .btn.btn-primary:hover {
+      background: #1e2940;
+    }
+
+    /* ── Countdown ring (early state) ────────────────────── */
+    .countdown-ring {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      background: conic-gradient(#3A4E83 var(--pct, 0%), rgba(58, 78, 131, 0.08) 0%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
       margin: 0 auto 20px;
-      font-size: 22px; font-weight: 800;
+      font-size: 18px;
+      font-weight: 700;
       position: relative;
     }
     .countdown-ring::before {
@@ -21,69 +153,139 @@
       position: absolute;
       inset: 6px;
       border-radius: 50%;
-      background: var(--bg-card);
+      background: #FFFFFF;
     }
-    .countdown-value { position: relative; z-index: 1; }
-    .countdown-label { font-size: 13px; color: var(--text-muted); margin-bottom: 24px; }
-    .badge-time {
-      background: rgba(124,58,237,.1);
-      border: 1px solid rgba(124,58,237,.25);
-      border-radius: var(--radius-sm);
-      padding: 10px 16px;
-      font-size: 14px; font-weight: 600;
-      color: var(--accent-light);
-      margin-bottom: 24px;
-      display: inline-block;
+    .countdown-value {
+      position: relative;
+      z-index: 1;
+      color: #3A4E83;
+      font-size: 16px;
+      font-weight: 700;
     }
+    .countdown-label {
+      font-size: 12px;
+      color: #7C95C0;
+      margin-bottom: 20px;
+      line-height: 1.6;
+    }
+
+    /* ── btn-outline for this page ───────────────────────── */
+    .join-state .btn.btn-outline {
+      background: #F7F9FC;
+      border: 1px solid #D0D9E8;
+      color: #384C75;
+      font-size: 13px;
+      font-weight: 600;
+    }
+    .join-state .btn.btn-outline:hover {
+      background: #edf0f7;
+    }
+
+    /* Inner content gap — matches Figma 28px between sections */
+    #activeState .join-inner,
+    #earlyState .join-inner {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 20px;
   </style>
 </head>
 <body>
   <div class="page-wrapper">
     <header class="page-header">
       <div class="brand-badge"><span class="dot"></span>Vaama Live Support</div>
-      <h1 id="pageTitle">Joining your call…</h1>
-      <p id="pageSubtitle">Please wait a moment.</p>
+      <div>
+        <h1 id="pageTitle">Connecting Your Call.....</h1>
+        <p id="pageSubtitle">Please wait a moment.</p>
+      </div>
     </header>
 
+    <!-- State: loading -->
     <div class="card join-state" id="loadingState">
-      <div style="font-size:48px;margin-bottom:16px;">⏳</div>
-      <p style="color:var(--text-muted)">Looking up your call…</p>
+      <div style="font-size:48px;margin-bottom:16px;">&#8987;</div>
+      <p style="color:#7C95C0">Looking up your call&#8230;</p>
     </div>
 
     <!-- State: active (can join now) -->
     <div class="card join-state" id="activeState" style="display:none;">
-      <div style="font-size:48px;margin-bottom:16px;">🟢</div>
-      <div class="confirm-title">Your Expert is Ready!</div>
-      <div class="confirm-subtitle" id="activeMsg">Click below to join your live video call.</div>
-      <div class="badge-time" id="activeBadge">—</div>
-      <button class="btn btn-primary" id="joinCallBtn">🚀 Join Now</button>
+      <div class="join-inner">
+        <!-- Agent avatar icon -->
+        <div class="agent-avatar">
+          <!-- Exact Figma headset-person icon -->
+          <svg width="28" height="28" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <!-- Head -->
+            <circle cx="14" cy="9.5" r="3.5" stroke="#3DBE8C" stroke-width="1.4"/>
+            <!-- Shoulders / body arc -->
+            <path d="M7 22c0-3.866 3.134-7 7-7s7 3.134 7 7" stroke="#3DBE8C" stroke-width="1.4" stroke-linecap="round"/>
+            <!-- Left headphone ear cup -->
+            <rect x="5.5" y="16" width="3" height="4.5" rx="1.5" stroke="#3DBE8C" stroke-width="1.3"/>
+            <!-- Right headphone ear cup -->
+            <rect x="19.5" y="16" width="3" height="4.5" rx="1.5" stroke="#3DBE8C" stroke-width="1.3"/>
+            <!-- Headband arc -->
+            <path d="M5.5 17.5C5.5 11.701 9.477 7 14 7s8.5 4.701 8.5 10.5" stroke="#3DBE8C" stroke-width="1.3" stroke-linecap="round" fill="none"/>
+          </svg>
+        </div>
+
+        <div>
+          <div class="confirm-title">The Expert is Ready</div>
+          <div class="confirm-subtitle" id="activeMsg">
+            Hi, <strong>Priya!</strong> Your call starts in <span class="highlight">1 min.</span>
+          </div>
+        </div>
+
+        <!-- Date + time badge -->
+        <div class="badge-time" id="activeBadge">
+          <!-- Calendar icon -->
+          <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <rect x="2" y="4" width="16" height="14" rx="2" stroke="#384C75" stroke-width="1.5"/>
+            <path d="M2 8h16" stroke="#384C75" stroke-width="1.5"/>
+            <path d="M6 2v3M14 2v3" stroke="#384C75" stroke-width="1.5" stroke-linecap="round"/>
+          </svg>
+          <span id="activeBadgeDate">Friday, 17th April</span>
+          <span class="badge-dot"></span>
+          <span id="activeBadgeTime">01:00 pm</span>
+        </div>
+
+        <button class="btn btn-primary" id="joinCallBtn">Join Now</button>
+      </div>
     </div>
 
     <!-- State: too early (show countdown) -->
     <div class="card join-state" id="earlyState" style="display:none;">
-      <div class="countdown-ring" id="countdownRing">
-        <span class="countdown-value" id="countdownVal">—</span>
+      <div class="join-inner">
+        <div class="countdown-ring" id="countdownRing">
+          <span class="countdown-value" id="countdownVal">&#8212;</span>
+        </div>
+        <div>
+          <div class="confirm-title">Your Call Starts Soon</div>
+          <div class="badge-time" id="earlyBadge">
+            <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+              <rect x="2" y="4" width="16" height="14" rx="2" stroke="#384C75" stroke-width="1.5"/>
+              <path d="M2 8h16" stroke="#384C75" stroke-width="1.5"/>
+              <path d="M6 2v3M14 2v3" stroke="#384C75" stroke-width="1.5" stroke-linecap="round"/>
+            </svg>
+            <span id="earlyBadgeText">Scheduled for &#8212;</span>
+          </div>
+        </div>
+        <p class="countdown-label">Link becomes active 15 minutes before your call.<br/>Come back then or keep this page open!</p>
+        <button class="btn btn-outline" onclick="window.location.reload()">&#8635; Refresh</button>
       </div>
-      <div class="confirm-title">Your Call Starts Soon</div>
-      <div class="badge-time" id="earlyBadge">Scheduled for —</div>
-      <p class="countdown-label">Link becomes active 15 minutes before your call.<br/>Come back then or keep this page open!</p>
-      <button class="btn btn-outline" onclick="window.location.reload()">🔄 Refresh</button>
     </div>
 
     <!-- State: expired -->
     <div class="card join-state" id="expiredState" style="display:none;">
-      <div style="font-size:48px;margin-bottom:16px;">⌛</div>
+      <div style="font-size:48px;margin-bottom:16px;">&#8987;</div>
       <div class="confirm-title">This Link Has Expired</div>
       <div class="confirm-subtitle">Your scheduled call window has passed. Please schedule a new call.</div>
-      <a href="/" class="btn btn-primary" style="margin-top:16px;text-decoration:none;">📅 Schedule Again</a>
+      <a href="/" class="btn btn-primary" style="margin-top:16px;text-decoration:none;">&#128197; Schedule Again</a>
     </div>
 
     <!-- State: not found -->
     <div class="card join-state" id="notFoundState" style="display:none;">
-      <div style="font-size:48px;margin-bottom:16px;">❓</div>
+      <div style="font-size:48px;margin-bottom:16px;">&#10067;</div>
       <div class="confirm-title">Link Not Found</div>
       <div class="confirm-subtitle">This join link is invalid or has already been used.</div>
-      <a href="/" class="btn btn-outline" style="margin-top:16px;text-decoration:none;">← Go Back</a>
+      <a href="/" class="btn btn-outline" style="margin-top:16px;text-decoration:none;">&#8592; Go Back</a>
     </div>
   </div>
 

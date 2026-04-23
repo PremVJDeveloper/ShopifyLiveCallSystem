@@ -509,81 +509,134 @@ input#userPhone {
 }
 
 .confirm-icon {
-  width: 56px;
-  height: 56px;
+  width: 65px;
+  height: 65px;
   border-radius: 50%;
-  background: rgba(16, 185, 129, 0.1);
-  border: 1px solid rgba(16, 185, 129, 0.25);
+  background: #CFEBE3;
+  border: 1px solid #85DEBB;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 24px;
-  margin: 0 auto 16px;
+  margin: 0 auto 8px;
+  flex-shrink: 0;
 }
 
 .confirm-title {
+  font-family: 'HeadstockSans', Georgia, serif;
   text-align: center;
-  font-size: 20px;
-  font-weight: 700;
-  color: var(--text);
+  font-size: 24px;
+  font-weight: 600;
+  line-height: 28px;
+  color: #2B3C59;
   margin-bottom: 8px;
 }
 
 .confirm-subtitle {
   text-align: center;
-  color: var(--text-muted);
-  font-size: 13px;
-  margin-bottom: 20px;
-  line-height: 1.6;
+  color: #7C95C0;
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 15px;
+  margin-bottom: 29px;
 }
 
 .join-link-box {
-  background: var(--bg-input);
-  border: 0.5px solid var(--border);
-  border-radius: var(--radius-sm);
-  padding: 12px 14px;
+  background: #F7F9FC;
+  border: 1px solid #D0D9E8;
+  border-radius: 5px;
+  padding: 15px;
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 10px;
   margin-bottom: 16px;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .join-link-url {
   font-size: 12px;
-  color: var(--accent-mid);
-  word-break: break-all;
+  font-weight: 500;
+  color: #384C75;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
   flex: 1;
 }
 
 .copy-btn {
   flex-shrink: 0;
-  background: rgba(58, 78, 131, 0.1);
-  border: 1px solid rgba(58, 78, 131, 0.25);
-  color: var(--accent-mid);
+  background: #D0D9E8;
+  border: none;
+  color: #28365B;
   border-radius: 5px;
-  padding: 5px 12px;
+  padding: 6px 12px;
   font-size: 12px;
   font-weight: 600;
   cursor: pointer;
   transition: var(--transition);
   font-family: inherit;
+  white-space: nowrap;
 }
 
 .copy-btn:hover {
-  background: rgba(58, 78, 131, 0.2);
+  background: #c0cde0;
 }
 
 .schedule-time-badge {
-  text-align: center;
-  background: rgba(58, 78, 131, 0.08);
-  border: 1px solid rgba(58, 78, 131, 0.15);
-  border-radius: var(--radius-sm);
-  padding: 10px;
-  font-size: 13px;
-  color: var(--accent-mid);
-  margin-bottom: 16px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  padding: 12px 16px;
+  background: #F7F9FC;
+  border: 1px solid #D0D9E8;
+  border-radius: 5px;
+  font-size: 16px;
   font-weight: 600;
+  color: #384C75;
+  margin-bottom: 16px;
+  box-sizing: border-box;
+  white-space: nowrap;
+}
+
+/* Two-button row at the bottom of the confirm card */
+.confirm-btn-row {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 16px;
+  width: 100%;
+}
+.confirm-btn-row .btn {
+  flex: 1;
+  height: 47px;
+  font-size: 14px;
+  font-weight: 600;
+  border-radius: 5px;
+  padding: 0;
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.confirm-btn-row .btn-outline {
+  background: #D0D9E8;
+  border: 1px solid #D0D9E8;
+  color: #28365B;
+}
+.confirm-btn-row .btn-outline:hover {
+  background: #c0cde0;
+}
+.confirm-btn-row .btn-primary {
+  background: #28365B;
+  border: 1px solid #D0D9E8;
+  color: #fff;
+}
+.confirm-btn-row .btn-primary:hover {
+  background: #1e2940;
 }
 
 /* ── Loading spinner ─────────────────────────────────────────  */
