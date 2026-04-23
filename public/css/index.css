@@ -1,4 +1,68 @@
-/* Fonts loaded via <link> in HTML (Inter + Cormorant Garamond) */
+/* ── HeadstockSans — local font ───────────────────────────────── */
+@font-face {
+  font-family: 'HeadstockSans';
+  src: url('/fonts/HeadstockSansThin.otf') format('opentype');
+  font-weight: 100;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'HeadstockSans';
+  src: url('/fonts/HeadstockSansThinItalic.otf') format('opentype');
+  font-weight: 100;
+  font-style: italic;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'HeadstockSans';
+  src: url('/fonts/HeadstockSansRegular.otf') format('opentype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'HeadstockSans';
+  src: url('/fonts/HeadstockSansItalic.otf') format('opentype');
+  font-weight: 400;
+  font-style: italic;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'HeadstockSans';
+  src: url('/fonts/HeadstockSansSemibold.otf') format('opentype');
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'HeadstockSans';
+  src: url('/fonts/HeadstockSansBold.otf') format('opentype');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'HeadstockSans';
+  src: url('/fonts/HeadstockSansBoldItalic.otf') format('opentype');
+  font-weight: 700;
+  font-style: italic;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'HeadstockSans';
+  src: url('/fonts/HeadstockSansExtrabold.otf') format('opentype');
+  font-weight: 800;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'HeadstockSans';
+  src: url('/fonts/HeadstockSansExtraboldItalic.otf') format('opentype');
+  font-weight: 800;
+  font-style: italic;
+  font-display: swap;
+}
+
 
 /* ── Design tokens ──────────────────────────────────────────── */
 :root {
@@ -129,7 +193,7 @@ body::before {
 }
 
 .page-header h1 {
-  font-family: 'Cormorant Garamond', 'HeadstockSans', Georgia, serif;
+  font-family: 'HeadstockSans', Georgia, serif;
   font-size: clamp(32px, 4.5vw, 48px);
   font-weight: 600;
   line-height: 1.15;
