@@ -3,29 +3,29 @@
  */
 
 // ── DOM refs ────────────────────────────────────────────────────
-const nameEl        = document.getElementById('userName');
-const phoneEl       = document.getElementById('userPhone');
-const emailEl       = document.getElementById('userEmail');
-const lookingForEl  = document.getElementById('lookingFor');
-const priceRangeEl  = document.getElementById('priceRange');
-const otherField    = document.getElementById('otherField');
-const otherEl       = document.getElementById('lookingForOther');
-const emailWrapper  = document.getElementById('emailFieldWrapper');
-const emailError    = document.getElementById('emailError');
-const nameError     = document.getElementById('nameError');
-const joinNowBtn    = document.getElementById('joinNowBtn');
-const scheduleBtn   = document.getElementById('scheduleBtn');
-const chips         = document.querySelectorAll('.chip');
+const nameEl = document.getElementById('userName');
+const phoneEl = document.getElementById('userPhone');
+const emailEl = document.getElementById('userEmail');
+const lookingForEl = document.getElementById('lookingFor');
+const priceRangeEl = document.getElementById('priceRange');
+const otherField = document.getElementById('otherField');
+const otherEl = document.getElementById('lookingForOther');
+const emailWrapper = document.getElementById('emailFieldWrapper');
+const emailError = document.getElementById('emailError');
+const nameError = document.getElementById('nameError');
+const joinNowBtn = document.getElementById('joinNowBtn');
+const scheduleBtn = document.getElementById('scheduleBtn');
+const chips = document.querySelectorAll('.chip');
 const customDtGroup = document.getElementById('customDtGroup');
-const customDate    = document.getElementById('customDate');
-const customTime    = document.getElementById('customTime');
-const mainCard      = document.getElementById('mainCard');
-const confirmCard   = document.getElementById('confirmCard');
-const confirmSub    = document.getElementById('confirmSubtitle');
-const confirmBadge  = document.getElementById('confirmTimeBadgeText');
-const joinLinkUrl   = document.getElementById('joinLinkUrl');
-const copyBtn       = document.getElementById('copyLinkBtn');
-const joinNowConfirm= document.getElementById('joinNowConfirmBtn');
+const customDate = document.getElementById('customDate');
+const customTime = document.getElementById('customTime');
+const mainCard = document.getElementById('mainCard');
+const confirmCard = document.getElementById('confirmCard');
+const confirmSub = document.getElementById('confirmSubtitle');
+const confirmBadge = document.getElementById('confirmTimeBadgeText');
+const joinLinkUrl = document.getElementById('joinLinkUrl');
+const copyBtn = document.getElementById('copyLinkBtn');
+const joinNowConfirm = document.getElementById('joinNowConfirmBtn');
 const scheduleAnother = document.getElementById('scheduleAnotherBtn');
 
 // ── State ────────────────────────────────────────────────────────
@@ -59,7 +59,7 @@ async function updateJoinNowVisibility() {
   const adminOnline = await getAdminStatus();
   if (!adminOnline) {
     joinNowBtn.style.display = 'none';
-    
+
     // Avoid duplicate banners
     if (!document.querySelector('.offline-banner')) {
       const offlineMsg = document.createElement('div');
@@ -87,8 +87,8 @@ customDate.max = _toDateStr(maxDate);
 customDate.value = _toDateStr(today);
 
 // Set default time to nearest 30-min slot in future
-const roundedTime = new Date(Math.ceil(Date.now() / (30*60*1000)) * 30*60*1000);
-customTime.value = `${String(roundedTime.getHours()).padStart(2,'0')}:${String(roundedTime.getMinutes()).padStart(2,'0')}`;
+const roundedTime = new Date(Math.ceil(Date.now() / (30 * 60 * 1000)) * 30 * 60 * 1000);
+customTime.value = `${String(roundedTime.getHours()).padStart(2, '0')}:${String(roundedTime.getMinutes()).padStart(2, '0')}`;
 
 // ── Schedule chip selection ──────────────────────────────────────
 chips.forEach(chip => {
@@ -134,9 +134,9 @@ scheduleBtn.addEventListener('click', async () => {
     return;
   }
 
-  const name      = nameEl.value.trim();
-  const phone     = phoneEl.value.trim();
-  const email     = emailEl.value.trim();
+  const name = nameEl.value.trim();
+  const phone = phoneEl.value.trim();
+  const email = emailEl.value.trim();
   const lookingFor = getLookingFor();
   const priceRange = priceRangeEl?.value || '';
   const returnUrl = params.get('return_url') || 'https://vaama.co';
@@ -226,9 +226,9 @@ function _validateEmail() {
 
 function _getScheduledTime() {
   const now = new Date();
-  if (selectedSchedule === '15')  { now.setMinutes(now.getMinutes() + 15); return now; }
-  if (selectedSchedule === '30')  { now.setMinutes(now.getMinutes() + 30); return now; }
-  if (selectedSchedule === '60')  { now.setMinutes(now.getMinutes() + 60); return now; }
+  if (selectedSchedule === '15') { now.setMinutes(now.getMinutes() + 15); return now; }
+  if (selectedSchedule === '30') { now.setMinutes(now.getMinutes() + 30); return now; }
+  if (selectedSchedule === '60') { now.setMinutes(now.getMinutes() + 60); return now; }
   if (selectedSchedule === 'custom') {
     if (!customDate.value || !customTime.value) return null;
     const dt = new Date(`${customDate.value}T${customTime.value}`);
