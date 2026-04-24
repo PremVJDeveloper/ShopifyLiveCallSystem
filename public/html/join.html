@@ -363,7 +363,22 @@
 
     function joinCall(data) {
       const returnUrl = data.return_url || 'https://vaama.co';
-      const d = btoa(JSON.stringify({ name: data.name, phone: data.phone || '', returnUrl }));
+      const tracking = {
+        utm_source:   data.utm_source || '',
+        utm_medium:   data.utm_medium || '',
+        utm_campaign: data.utm_campaign || '',
+        utm_content:  data.utm_content || '',
+        utm_term:     data.utm_term || '',
+        gclid:        data.gclid || '',
+        referrer:     data.referrer || '',
+        full_url:     data.full_url || ''
+      };
+      const d = btoa(JSON.stringify({ 
+        name: data.name, 
+        phone: data.phone || '', 
+        returnUrl,
+        tracking // Include original tracking data
+      }));
       window.location.href = `/call-request?data=${encodeURIComponent(d)}`;
     }
 
