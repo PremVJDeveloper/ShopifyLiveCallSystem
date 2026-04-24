@@ -4,11 +4,11 @@
  */
 const express = require('express');
 const router = express.Router();
-const { socketAdminAuth } = require('../middleware/auth');
+const { requireAuth } = require('../middleware/auth');
 const SessionStore = require('../state/SessionStore');
 
 // Guard all routes in this file with Admin JWT auth
-router.use(socketAdminAuth);
+router.use(requireAuth);
 
 /**
  * GET /api/admin/history
