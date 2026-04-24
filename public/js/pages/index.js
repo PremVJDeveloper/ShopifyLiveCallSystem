@@ -107,6 +107,21 @@ chips.forEach(chip => {
   });
 });
 
+// ── Tracking ────────────────────────────────────────────────────
+function getTrackingData() {
+  const params = new URLSearchParams(window.location.search);
+  return {
+    utm_source:   params.get('utm_source') || '',
+    utm_medium:   params.get('utm_medium') || '',
+    utm_campaign: params.get('utm_campaign') || '',
+    utm_content:  params.get('utm_content') || '',
+    utm_term:     params.get('utm_term') || '',
+    gclid:        params.get('gclid') || '',
+    referrer:     document.referrer || '',
+    full_url:     window.location.href
+  };
+}
+
 // ── Join Now ────────────────────────────────────────────────────
 joinNowBtn.addEventListener('click', () => {
   if (!_validateName()) return;
@@ -115,9 +130,13 @@ joinNowBtn.addEventListener('click', () => {
   const lookingFor = getLookingFor();
   const priceRange = priceRangeEl?.value || '';
   const returnUrl = params.get('return_url') || 'https://vaama.co';
+  const tracking = getTrackingData();
 
   setLoading(joinNowBtn, true);
-  const data = btoa(JSON.stringify({ name, phone, lookingFor, priceRange, returnUrl }));
+  const data = btoa(JSON.stringify({ 
+    name, phone, lookingFor, priceRange, returnUrl,
+    tracking // send tracking data
+  }));
   setTimeout(() => {
     window.location.href = `/call-request?data=${encodeURIComponent(data)}`;
   }, 400);
@@ -140,6 +159,7 @@ scheduleBtn.addEventListener('click', async () => {
   const lookingFor = getLookingFor();
   const priceRange = priceRangeEl?.value || '';
   const returnUrl = params.get('return_url') || 'https://vaama.co';
+  const tracking = getTrackingData();
 
   setLoading(scheduleBtn, true);
 
@@ -147,7 +167,12 @@ scheduleBtn.addEventListener('click', async () => {
     const res = await fetch('/api/schedule', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ name, phone, email, lookingFor, priceRange, scheduledAt: scheduledAt.toISOString(), returnUrl }),
+      body: JSON.stringify({ 
+        name, phone, email, lookingFor, priceRange, 
+        scheduledAt: scheduledAt.toISOString(), 
+        returnUrl,
+        tracking // send tracking data
+      }),
     });
 
     const json = await res.json();

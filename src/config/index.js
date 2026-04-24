@@ -58,8 +58,9 @@ const config = {
     ],
   },
 
-  // SQLite — file-based, zero external setup required
+  // Database configuration
   db: {
+    databaseUrl: process.env.DATABASE_URL || null, // e.g. postgres://...
     sqlitePath: process.env.SQLITE_DB_PATH
       ? path.resolve(process.env.SQLITE_DB_PATH)
       : path.join(__dirname, '../../data/livecall.db'),
