@@ -64,8 +64,8 @@ app.use('/api/logs', logRoutes);
 app.use('/api/ice-servers', iceRoutes);
 
 // Join link lookup (used by join.html)
-app.get('/api/schedule/join/:token', (req, res) => {
-  const record = ScheduleStore.getByToken(req.params.token);
+app.get('/api/schedule/join/:token', async (req, res) => {
+  const record = await ScheduleStore.getByToken(req.params.token);
   if (!record) return res.status(404).json({ error: 'Not found' });
   return res.json(record);
 });
@@ -81,11 +81,13 @@ const setupSocket = require('./src/socket');
 setupSocket(io);
 
 // ─── Database Init ──────────────────────────────────────────────
+const db = require('./src/state/DBManager');
 const SessionStore = require('./src/state/SessionStore');
 
 // ─── Start Server ───────────────────────────────────────────────
 async function start() {
   // Initialize databases
+  await db.init();
   await SessionStore.init();
   await ScheduleStore.init();
 
@@ -94,9 +96,13 @@ async function start() {
       port: config.server.port,
       env: config.server.env,
       node: process.version,
-      db: SessionStore.isEnabled() ? 'connected' : 'disabled',
+      db: db.type,
       turn: config.webrtc.iceServers.length > 2 ? 'configured' : 'STUN only',
     });
+
+    const dbDisplay = db.type === 'postgres' 
+      ? '✅ PostgreSQL (RDS/EC2)' 
+      : '✅ SQLite (' + config.db.sqlitePath + ')';
 
     console.log('');
     console.log('  🚀 ShopifyLiveCallSystem');
@@ -105,7 +111,7 @@ async function start() {
     console.log(`  ├─ Login:     http://localhost:${config.server.port}/login`);
     console.log(`  ├─ Health:    http://localhost:${config.server.port}/health`);
     console.log(`  ├─ Metrics:   http://localhost:${config.server.port}/metrics`);
-    console.log(`  ├─ Database:  ${SessionStore.isEnabled() ? '✅ SQLite (' + config.db.sqlitePath + ')' : '⚠ SQLite failed to open'}`);
+    console.log(`  ├─ Database:  ${dbDisplay}`);
     console.log(`  └─ TURN:      ${config.webrtc.iceServers.length > 2 ? '✅ Configured' : '⚠ STUN only (set TURN creds in .env)'}`);
     console.log('');
   });

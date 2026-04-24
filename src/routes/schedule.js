@@ -11,7 +11,7 @@ const logger       = require('../utils/logger');
 // ── POST /api/schedule ───────────────────────────────────────────
 router.post('/', async (req, res) => {
   try {
-    const { name, phone, email, lookingFor, priceRange, scheduledAt, returnUrl } = req.body;
+    const { name, phone, email, lookingFor, priceRange, scheduledAt, returnUrl, tracking } = req.body;
 
     // Validate
     if (!name || name.trim().length < 2) {
@@ -32,7 +32,7 @@ router.post('/', async (req, res) => {
       return res.status(400).json({ error: 'Cannot schedule more than 7 days ahead' });
     }
 
-    const record = ScheduleStore.createSchedule({
+    const record = await ScheduleStore.createSchedule({
       name: name.trim(),
       phone: phone?.trim() || null,
       email: email?.trim() || null,
@@ -40,6 +40,7 @@ router.post('/', async (req, res) => {
       priceRange: priceRange?.trim() || null,
       scheduledAt: dt.toISOString(),
       returnUrl: returnUrl || null,
+      tracking: tracking || {}, // Capture tracking data
     });
 
     const joinUrl = `${req.protocol}://${req.get('host')}/join/${record.token}`;
@@ -71,9 +72,9 @@ router.post('/', async (req, res) => {
 });
 
 // ── GET /api/schedule/upcoming (admin) ──────────────────────────
-router.get('/upcoming', (req, res) => {
+router.get('/upcoming', async (req, res) => {
   try {
-    const rows = ScheduleStore.getUpcoming();
+    const rows = await ScheduleStore.getUpcoming();
     const base = `${req.protocol}://${req.get('host')}`;
     const result = rows.map(r => ({
       ...r,
