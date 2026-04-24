@@ -3,29 +3,29 @@
  */
 
 // ── DOM refs ────────────────────────────────────────────────────
-const nameEl        = document.getElementById('userName');
-const phoneEl       = document.getElementById('userPhone');
-const emailEl       = document.getElementById('userEmail');
-const lookingForEl  = document.getElementById('lookingFor');
-const priceRangeEl  = document.getElementById('priceRange');
-const otherField    = document.getElementById('otherField');
-const otherEl       = document.getElementById('lookingForOther');
-const emailWrapper  = document.getElementById('emailFieldWrapper');
-const emailError    = document.getElementById('emailError');
-const nameError     = document.getElementById('nameError');
-const joinNowBtn    = document.getElementById('joinNowBtn');
-const scheduleBtn   = document.getElementById('scheduleBtn');
-const chips         = document.querySelectorAll('.chip');
+const nameEl = document.getElementById('userName');
+const phoneEl = document.getElementById('userPhone');
+const emailEl = document.getElementById('userEmail');
+const lookingForEl = document.getElementById('lookingFor');
+const priceRangeEl = document.getElementById('priceRange');
+const otherField = document.getElementById('otherField');
+const otherEl = document.getElementById('lookingForOther');
+const emailWrapper = document.getElementById('emailFieldWrapper');
+const emailError = document.getElementById('emailError');
+const nameError = document.getElementById('nameError');
+const joinNowBtn = document.getElementById('joinNowBtn');
+const scheduleBtn = document.getElementById('scheduleBtn');
+const chips = document.querySelectorAll('.chip');
 const customDtGroup = document.getElementById('customDtGroup');
-const customDate    = document.getElementById('customDate');
-const customTime    = document.getElementById('customTime');
-const mainCard      = document.getElementById('mainCard');
-const confirmCard   = document.getElementById('confirmCard');
-const confirmSub    = document.getElementById('confirmSubtitle');
-const confirmBadge  = document.getElementById('confirmTimeBadge');
-const joinLinkUrl   = document.getElementById('joinLinkUrl');
-const copyBtn       = document.getElementById('copyLinkBtn');
-const joinNowConfirm= document.getElementById('joinNowConfirmBtn');
+const customDate = document.getElementById('customDate');
+const customTime = document.getElementById('customTime');
+const mainCard = document.getElementById('mainCard');
+const confirmCard = document.getElementById('confirmCard');
+const confirmSub = document.getElementById('confirmSubtitle');
+const confirmBadge = document.getElementById('confirmTimeBadgeText');
+const joinLinkUrl = document.getElementById('joinLinkUrl');
+const copyBtn = document.getElementById('copyLinkBtn');
+const joinNowConfirm = document.getElementById('joinNowConfirmBtn');
 const scheduleAnother = document.getElementById('scheduleAnotherBtn');
 
 // ── State ────────────────────────────────────────────────────────
@@ -44,24 +44,33 @@ lookingForEl?.addEventListener('change', () => {
 });
 
 // ── Admin Availability ───────────────────────────────────────────
-async function checkAdminStatus() {
+async function getAdminStatus() {
   try {
     const res = await fetch('/api/admin-status');
     const { adminOnline } = await res.json();
-    
-    if (!adminOnline) {
-      joinNowBtn.style.display = 'none';
+    return !!adminOnline;
+  } catch (err) {
+    console.error('Failed to check admin status:', err);
+    return false;
+  }
+}
+
+async function updateJoinNowVisibility() {
+  const adminOnline = await getAdminStatus();
+  if (!adminOnline) {
+    joinNowBtn.style.display = 'none';
+
+    // Avoid duplicate banners
+    if (!document.querySelector('.offline-banner')) {
       const offlineMsg = document.createElement('div');
       offlineMsg.className = 'offline-banner';
       offlineMsg.innerHTML = '🕒 Experts are currently offline. Please schedule a call below.';
       joinNowBtn.parentNode.insertBefore(offlineMsg, joinNowBtn);
     }
-  } catch (err) {
-    console.error('Failed to check admin status:', err);
   }
 }
 
-checkAdminStatus();
+updateJoinNowVisibility();
 
 // Helper: get final lookingFor value
 function getLookingFor() {
@@ -78,8 +87,8 @@ customDate.max = _toDateStr(maxDate);
 customDate.value = _toDateStr(today);
 
 // Set default time to nearest 30-min slot in future
-const roundedTime = new Date(Math.ceil(Date.now() / (30*60*1000)) * 30*60*1000);
-customTime.value = `${String(roundedTime.getHours()).padStart(2,'0')}:${String(roundedTime.getMinutes()).padStart(2,'0')}`;
+const roundedTime = new Date(Math.ceil(Date.now() / (30 * 60 * 1000)) * 30 * 60 * 1000);
+customTime.value = `${String(roundedTime.getHours()).padStart(2, '0')}:${String(roundedTime.getMinutes()).padStart(2, '0')}`;
 
 // ── Schedule chip selection ──────────────────────────────────────
 chips.forEach(chip => {
@@ -98,6 +107,21 @@ chips.forEach(chip => {
   });
 });
 
+// ── Tracking ────────────────────────────────────────────────────
+function getTrackingData() {
+  const params = new URLSearchParams(window.location.search);
+  return {
+    utm_source:   params.get('utm_source') || '',
+    utm_medium:   params.get('utm_medium') || '',
+    utm_campaign: params.get('utm_campaign') || '',
+    utm_content:  params.get('utm_content') || '',
+    utm_term:     params.get('utm_term') || '',
+    gclid:        params.get('gclid') || '',
+    referrer:     document.referrer || '',
+    full_url:     window.location.href
+  };
+}
+
 // ── Join Now ────────────────────────────────────────────────────
 joinNowBtn.addEventListener('click', () => {
   if (!_validateName()) return;
@@ -106,9 +130,13 @@ joinNowBtn.addEventListener('click', () => {
   const lookingFor = getLookingFor();
   const priceRange = priceRangeEl?.value || '';
   const returnUrl = params.get('return_url') || 'https://vaama.co';
+  const tracking = getTrackingData();
 
   setLoading(joinNowBtn, true);
-  const data = btoa(JSON.stringify({ name, phone, lookingFor, priceRange, returnUrl }));
+  const data = btoa(JSON.stringify({ 
+    name, phone, lookingFor, priceRange, returnUrl,
+    tracking // send tracking data
+  }));
   setTimeout(() => {
     window.location.href = `/call-request?data=${encodeURIComponent(data)}`;
   }, 400);
@@ -125,12 +153,13 @@ scheduleBtn.addEventListener('click', async () => {
     return;
   }
 
-  const name      = nameEl.value.trim();
-  const phone     = phoneEl.value.trim();
-  const email     = emailEl.value.trim();
+  const name = nameEl.value.trim();
+  const phone = phoneEl.value.trim();
+  const email = emailEl.value.trim();
   const lookingFor = getLookingFor();
   const priceRange = priceRangeEl?.value || '';
   const returnUrl = params.get('return_url') || 'https://vaama.co';
+  const tracking = getTrackingData();
 
   setLoading(scheduleBtn, true);
 
@@ -138,7 +167,12 @@ scheduleBtn.addEventListener('click', async () => {
     const res = await fetch('/api/schedule', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ name, phone, email, lookingFor, priceRange, scheduledAt: scheduledAt.toISOString(), returnUrl }),
+      body: JSON.stringify({ 
+        name, phone, email, lookingFor, priceRange, 
+        scheduledAt: scheduledAt.toISOString(), 
+        returnUrl,
+        tracking // send tracking data
+      }),
     });
 
     const json = await res.json();
@@ -155,7 +189,7 @@ scheduleBtn.addEventListener('click', async () => {
 });
 
 // ── Confirmation UI ─────────────────────────────────────────────
-function _showConfirmation(data, scheduledAt, name) {
+async function _showConfirmation(data, scheduledAt, name) {
   mainCard.style.display = 'none';
   confirmCard.style.display = 'block';
 
@@ -166,25 +200,27 @@ function _showConfirmation(data, scheduledAt, name) {
     weekday: 'long', day: 'numeric', month: 'long',
     hour: '2-digit', minute: '2-digit', hour12: true,
   });
-  confirmBadge.textContent = `📅 ${fmt}`;
+  confirmBadge.textContent = fmt;
 
-  // If scheduled within 15 min → show "Join Now" immediately
-  const minsFromNow = (scheduledAt - Date.now()) / 60000;
-  if (minsFromNow <= 16) {
-    joinNowConfirm.style.display = 'flex';
-    joinNowConfirm.addEventListener('click', () => { window.location.href = link; });
-    confirmSub.textContent = `${name}, your call is ready! Click below to join, or use your email link.`;
-  } else {
-    confirmSub.textContent = `We've sent a confirmation to your email with joining instructions.`;
+  // Always hide Join Now on confirmation card as requested
+  joinNowConfirm.style.display = 'none';
+  confirmSub.textContent = `We've sent a confirmation to ${data.email || 'your email'} with joining instructions.`;
+
+  // Set Back to Vaama link
+  const backBtn = document.getElementById('backToVaamaBtn');
+  if (backBtn) {
+    const returnUrl = params.get('return_url') || 'https://vaama.co';
+    backBtn.href = returnUrl;
   }
 
-  copyBtn.addEventListener('click', () => {
+  copyBtn.onclick = () => {
     navigator.clipboard.writeText(link).then(() => {
       copyBtn.textContent = 'Copied!';
       setTimeout(() => { copyBtn.textContent = 'Copy'; }, 2000);
     });
-  });
+  };
 }
+
 
 scheduleAnother.addEventListener('click', () => {
   confirmCard.style.display = 'none';
@@ -215,9 +251,9 @@ function _validateEmail() {
 
 function _getScheduledTime() {
   const now = new Date();
-  if (selectedSchedule === '15')  { now.setMinutes(now.getMinutes() + 15); return now; }
-  if (selectedSchedule === '30')  { now.setMinutes(now.getMinutes() + 30); return now; }
-  if (selectedSchedule === '60')  { now.setMinutes(now.getMinutes() + 60); return now; }
+  if (selectedSchedule === '15') { now.setMinutes(now.getMinutes() + 15); return now; }
+  if (selectedSchedule === '30') { now.setMinutes(now.getMinutes() + 30); return now; }
+  if (selectedSchedule === '60') { now.setMinutes(now.getMinutes() + 60); return now; }
   if (selectedSchedule === 'custom') {
     if (!customDate.value || !customTime.value) return null;
     const dt = new Date(`${customDate.value}T${customTime.value}`);

@@ -1,106 +1,64 @@
 'use strict';
 /**
- * ScheduleStore — SQLite store for scheduled calls.
- * Uses the same better-sqlite3 DB as SessionStore.
+ * ScheduleStore — Unified store for scheduled calls.
+ * Uses DBManager to support both SQLite and Postgres.
  */
 
-const path = require('path');
-const fs   = require('fs');
 const { v4: uuidv4 } = require('uuid');
-const config = require('../config');
 const logger = require('../utils/logger');
-
-let db = null;
+const db = require('./DBManager');
 
 async function init() {
-  try {
-    const Database = require('better-sqlite3');
-    fs.mkdirSync(path.dirname(config.db.sqlitePath), { recursive: true });
-    db = new Database(config.db.sqlitePath);
-    db.pragma('journal_mode = WAL');
-    _createSchema();
-    logger.info('ScheduleStore ready');
-  } catch (err) {
-    logger.error('ScheduleStore init failed', { error: err.message });
-    db = null;
-  }
-}
-
-function _createSchema() {
-  db.exec(`
-    CREATE TABLE IF NOT EXISTS scheduled_calls (
-      id           TEXT PRIMARY KEY DEFAULT (lower(hex(randomblob(16)))),
-      token        TEXT UNIQUE NOT NULL,
-      name         TEXT NOT NULL,
-      phone        TEXT,
-      email        TEXT,
-      looking_for  TEXT,
-      price_range  TEXT,
-      scheduled_at TEXT NOT NULL,
-      return_url   TEXT,
-      status       TEXT NOT NULL DEFAULT 'pending',
-      room_id      TEXT,
-      created_at   TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ','now'))
-    );
-    CREATE INDEX IF NOT EXISTS idx_sched_token  ON scheduled_calls(token);
-    CREATE INDEX IF NOT EXISTS idx_sched_time   ON scheduled_calls(scheduled_at);
-    CREATE INDEX IF NOT EXISTS idx_sched_status ON scheduled_calls(status);
-  `);
-
-  // Migration: add looking_for to existing tables that don't have it yet
-  const cols = db.prepare("PRAGMA table_info(scheduled_calls)").all().map(c => c.name);
-  if (!cols.includes('looking_for')) {
-    db.exec(`ALTER TABLE scheduled_calls ADD COLUMN looking_for TEXT`);
-    logger.info('ScheduleStore: migrated — added looking_for column');
-  }
-  if (!cols.includes('price_range')) {
-    db.exec(`ALTER TABLE scheduled_calls ADD COLUMN price_range TEXT`);
-    logger.info('ScheduleStore: migrated — added price_range column');
-  }
+  // DBManager is initialized centrally in server.js
+  logger.info('ScheduleStore ready');
 }
 
 /**
  * Create a new scheduled call.
- * Returns the newly created record.
  */
-function createSchedule({ name, phone, email, lookingFor, priceRange, scheduledAt, returnUrl }) {
-  if (!db) throw new Error('Database not available');
+async function createSchedule({ name, phone, email, lookingFor, priceRange, scheduledAt, returnUrl, tracking = {} }) {
   const token = uuidv4();
-  db.prepare(`
-    INSERT INTO scheduled_calls (token, name, phone, email, looking_for, price_range, scheduled_at, return_url)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-  `).run(token, name, phone || null, email || null, lookingFor || null, priceRange || null, scheduledAt, returnUrl || null);
-  return { token, name, phone, email, lookingFor: lookingFor || null, priceRange: priceRange || null, scheduledAt, returnUrl };
+  const sql = `
+    INSERT INTO scheduled_calls (
+      token, name, phone, email, looking_for, price_range, scheduled_at, return_url,
+      utm_source, utm_medium, utm_campaign, utm_content, utm_term, gclid, referrer, full_url
+    )
+    VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16)
+  `;
+  
+  const params = [
+    token, name, phone || null, email || null, lookingFor || null, priceRange || null, scheduledAt, returnUrl || null,
+    tracking.utm_source || null, tracking.utm_medium || null, tracking.utm_campaign || null,
+    tracking.utm_content || null, tracking.utm_term || null, tracking.gclid || null,
+    tracking.referrer || null, tracking.full_url || null
+  ];
+
+  await db.run(sql, params);
+  return { token, name, phone, email, lookingFor, priceRange, scheduledAt, returnUrl };
 }
 
-/**
- * Get a scheduled call by token.
- */
-function getByToken(token) {
-  if (!db) return null;
-  return db.prepare('SELECT * FROM scheduled_calls WHERE token = ?').get(token) || null;
+async function getByToken(token) {
+  return await db.getOne('SELECT * FROM scheduled_calls WHERE token = $1', [token]);
 }
 
-/**
- * Update status of a scheduled call.
- */
-function updateStatus(token, status, roomId = null) {
-  if (!db) return;
-  db.prepare(`
-    UPDATE scheduled_calls SET status = ?, room_id = ? WHERE token = ?
-  `).run(status, roomId, token);
+async function updateStatus(token, status, roomId = null) {
+  await db.run(
+    'UPDATE scheduled_calls SET status = $1, room_id = $2 WHERE token = $3',
+    [status, roomId, token]
+  );
 }
 
-/**
- * Get all upcoming schedules (for admin view).
- */
-function getUpcoming({ limit = 50 } = {}) {
-  if (!db) return [];
-  return db.prepare(`
+async function getUpcoming({ limit = 50 } = {}) {
+  // SQLite and Postgres have slightly different syntax for "now"
+  const nowFilter = db.type === 'postgres' 
+    ? "scheduled_at > NOW() - INTERVAL '1 hour'"
+    : "scheduled_at > datetime('now', '-1 hour')";
+
+  return await db.query(`
     SELECT * FROM scheduled_calls
-    WHERE status = 'pending' AND scheduled_at > datetime('now', '-1 hour')
-    ORDER BY scheduled_at ASC LIMIT ?
-  `).all(limit);
+    WHERE status = 'pending' AND ${nowFilter}
+    ORDER BY scheduled_at ASC LIMIT $1
+  `, [limit]);
 }
 
 module.exports = { init, createSchedule, getByToken, updateStatus, getUpcoming };
