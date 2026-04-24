@@ -58,9 +58,11 @@ async function login(username, password) {
  * Socket.IO middleware — extracts JWT from handshake and marks socket as admin.
  */
 function socketAdminAuth(socket, next) {
+  if (!socket || !socket.handshake) return next();
+
   const token =
-    socket.handshake.auth?.token ||
-    socket.handshake.query?.token || '';
+    (socket.handshake.auth && socket.handshake.auth.token) ||
+    (socket.handshake.query && socket.handshake.query.token) || '';
 
   if (!token) return next(); // non-admin socket — that's fine
 

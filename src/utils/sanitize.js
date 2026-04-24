@@ -28,6 +28,7 @@ function sanitizeUserData(data) {
     returnUrl:  sanitizeUrl(data.returnUrl),
     source:     sanitizeString(data.source, 200),
     userAgent:  sanitizeString(data.userAgent, 500),
+    tracking:   (data.tracking && typeof data.tracking === 'object') ? data.tracking : {}, // Allow tracking data
     timestamp:  typeof data.timestamp === 'string' ? data.timestamp : new Date().toISOString(),
   };
 }
