@@ -59,6 +59,11 @@ let localStream = null;
 let callStartTime = null;
 let durationTimer = null;
 
+// ─── Shared panel helpers (module-level so init + startCall share them) ──
+const isMobile = () => window.innerWidth <= 640;
+let closeChatRef    = () => {};   // set in init()
+let closeCatalogRef = () => {};   // set in startCall()
+
 // ─── Fetch ICE servers from server ─────────────────────────────
 async function getIceServers() {
   try {
@@ -93,8 +98,19 @@ async function init() {
   Chat.addSystemMessage('Connecting to your call…');
 
   // Toggle chat panel (header button + control bar button)
-  const openChat  = () => { chatPanel.classList.add('open');    if (toggleChatBtn) toggleChatBtn.querySelector('.btn-icon').textContent = '✕'; Chat.clearUnread(); };
-  const closeChat = () => { chatPanel.classList.remove('open'); if (toggleChatBtn) toggleChatBtn.querySelector('.btn-icon').textContent = '💬'; };
+  const openChat  = () => {
+    // On mobile: close catalog first if it's open
+    if (isMobile()) closeCatalogRef();
+    chatPanel.classList.add('open');
+    if (toggleChatBtn) toggleChatBtn.querySelector('.btn-icon').textContent = '✕';
+    Chat.clearUnread();
+  };
+  const closeChat = () => {
+    chatPanel.classList.remove('open');
+    if (toggleChatBtn) toggleChatBtn.querySelector('.btn-icon').textContent = '💬';
+  };
+  // Wire module-level ref so startCall()'s openCatalog can call closeChat on mobile
+  closeChatRef = closeChat;
   toggleChatBtn?.addEventListener('click', () => chatPanel.classList.contains('open') ? closeChat() : openChat());
   document.getElementById('closeChat')?.addEventListener('click', closeChat);
 
@@ -239,6 +255,8 @@ async function startCall() {
 
     // Left-drawer open/close helpers (toggle .open class — same pattern as chat panel)
     const openCatalog  = () => {
+      // On mobile: close chat first if it's open
+      if (isMobile()) closeChatRef();
       catalogPanel.classList.add('open');
       if (catalogToggleBtn) {
         catalogToggleBtn.querySelector('.btn-icon').textContent = '✕';
@@ -252,6 +270,8 @@ async function startCall() {
         catalogToggleBtn.classList.remove('active');
       }
     };
+    // Expose closeCatalog so openChat (defined above) can call it on mobile
+    closeCatalogRef = closeCatalog;
 
     // Control-bar toggle button
     catalogToggleBtn?.addEventListener('click', () =>
