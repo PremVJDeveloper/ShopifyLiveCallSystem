@@ -76,47 +76,58 @@ export function toggleAudio(btnEl) {
 
 /**
  * Start/stop screen share, replacing the video track in the PeerConnection.
+ * The screen renders in a dedicated #screenTile panel (Google Meet-style).
+ * localVideo keeps the camera feed visible throughout.
  */
 export async function toggleScreenShare(btnEl) {
+  const videoGrid  = document.getElementById('videoGrid');
+  const screenTile = document.getElementById('screenTile');
+  const screenVideo = document.getElementById('screenVideo');
+
   if (state.screenSharing) {
-    // Stop screen share
+    // ── Stop screen share ──────────────────────────────────────
     stopAllTracks(state.screenStream);
     state.screenStream = null;
     state.screenSharing = false;
 
-    // Restore original video track
+    // Hide screen tile, restore normal grid layout
+    if (screenTile)  screenTile.style.display  = 'none';
+    if (screenVideo) screenVideo.srcObject = null;
+    if (videoGrid)   videoGrid.classList.remove('screen-sharing');
+
+    // Restore original camera track in PeerConnection
     if (peerConnection && originalStream) {
       const origTrack = originalStream.getVideoTracks()[0];
       if (origTrack) await replaceVideoTrack(peerConnection, origTrack);
     }
-    if (localVideoEl) localVideoEl.srcObject = originalStream;
 
     if (btnEl) {
       dom.removeClass(btnEl, 'active');
       btnEl.querySelector('.btn-label').textContent = 'Present';
-      btnEl.querySelector('.btn-icon').textContent = '🖥';
     }
   } else {
     try {
+      // ── Start screen share ─────────────────────────────────────
       const screenStream = await startScreenShare();
-      const videoTrack = screenStream.getVideoTracks()[0];
+      const videoTrack   = screenStream.getVideoTracks()[0];
 
-      // Replace in PeerConnection
+      // Replace the video track sent to the peer
       if (peerConnection) await replaceVideoTrack(peerConnection, videoTrack);
 
-      // Preview locally
-      if (localVideoEl) localVideoEl.srcObject = screenStream;
+      // Show screen in the dedicated tile (localVideo keeps camera)
+      if (screenVideo) screenVideo.srcObject = screenStream;
+      if (screenTile)  screenTile.style.display  = 'flex';
+      if (videoGrid)   videoGrid.classList.add('screen-sharing');
 
-      state.screenStream = screenStream;
+      state.screenStream  = screenStream;
       state.screenSharing = true;
 
-      // When user stops via browser UI
+      // Auto-stop when user clicks browser's "Stop sharing" button
       videoTrack.onended = () => toggleScreenShare(btnEl);
 
       if (btnEl) {
         dom.addClass(btnEl, 'active');
         btnEl.querySelector('.btn-label').textContent = 'Stop';
-        btnEl.querySelector('.btn-icon').textContent = '🛑';
       }
     } catch (e) {
       console.error('Screen share error:', e);

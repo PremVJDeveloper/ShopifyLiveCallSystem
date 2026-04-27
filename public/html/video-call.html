@@ -5,6 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
   <title>Video Call — Vaama Live Support</title>
   <meta name="description" content="Vaama live video call with support agent." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="/css/video-call.css" />
 </head>
 <body>
@@ -22,11 +25,16 @@
   <header class="vc-topbar">
     <div class="vc-topbar-left">
       <span class="vc-logo">Vaama Live</span>
-      <span id="status" class="status-text connecting">Initializing…</span>
+      <span class="vc-topbar-sep">|</span>
+      <span class="vc-session-label">Jewellery Expert session</span>
+      <!-- Hidden status (used by JS only) -->
+      <span id="status" class="status-text connecting" style="display:none;">Initializing…</span>
     </div>
     <div class="vc-topbar-right">
-      <span id="callDuration" class="call-timer">00:00</span>
-      <span id="connectionStatus" class="connection-badge connecting">Connecting…</span>
+      <div class="vc-timer-badge">
+        <span id="callDuration" class="call-timer">00:00</span>
+      </div>
+      <span id="connectionStatus" class="connection-badge connecting" style="display:none;">Connecting…</span>
     </div>
   </header>
 
@@ -34,7 +42,13 @@
   <div class="vc-wrapper">
     <!-- Video grid -->
     <div class="video-grid" id="videoGrid">
-      <!-- Remote (customer / agent) -->
+      <!-- Screen share tile (hidden until sharing starts) -->
+      <div class="video-tile screen-tile" id="screenTile" style="display:none;">
+        <video id="screenVideo" autoplay playsinline></video>
+        <div class="video-label">Screen Share</div>
+      </div>
+
+      <!-- Remote (customer / agent) — full tile on desktop, full screen on mobile -->
       <div class="video-tile remote-tile">
         <div class="remote-overlay" id="remoteOverlay">
           <div class="spinner-sm"></div>
@@ -44,7 +58,7 @@
         <div class="video-label" id="remoteLabel">Remote</div>
       </div>
 
-      <!-- Local (you) -->
+      <!-- Local (you) — second tile desktop, PiP overlay mobile -->
       <div class="video-tile local-tile">
         <video id="localVideo" autoplay muted playsinline></video>
         <div class="video-label" id="localLabel">You</div>
@@ -93,33 +107,66 @@
 
   <!-- Controls bar -->
   <div class="controls-bar" role="toolbar" aria-label="Call controls">
-    <button id="toggleVideo" class="ctrl-btn" title="Toggle camera" aria-pressed="true">
-      <span class="btn-icon">📷</span>
-      <span class="btn-label">Camera</span>
-    </button>
+    <!-- Mute / Audio toggle -->
     <button id="toggleAudio" class="ctrl-btn" title="Toggle microphone" aria-pressed="true">
-      <span class="btn-icon">🎙</span>
-      <span class="btn-label">Mic</span>
+      <span class="btn-icon">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect x="9" y="2" width="6" height="11" rx="3" stroke="currentColor" stroke-width="1.8"/>
+          <path d="M5 10c0 3.866 3.134 7 7 7s7-3.134 7-7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+          <path d="M12 19v3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+        </svg>
+      </span>
+      <span class="btn-label">Muted</span>
     </button>
-    <button id="toggleScreen" class="ctrl-btn" title="Share screen">
-      <span class="btn-icon">🖥</span>
-      <span class="btn-label">Present</span>
+    <!-- Camera toggle -->
+    <button id="toggleVideo" class="ctrl-btn" title="Toggle camera" aria-pressed="true">
+      <span class="btn-icon">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect x="2" y="7" width="14" height="10" rx="2" stroke="currentColor" stroke-width="1.8"/>
+          <path d="M16 10.5l5-2.5v8l-5-2.5v-3z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
+          <line x1="3" y1="21" x2="21" y2="3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+        </svg>
+      </span>
+      <span class="btn-label">Camera off</span>
     </button>
+    <!-- Chat toggle -->
     <button id="toggleChat" class="ctrl-btn chat-toggle-btn" title="Open chat" style="position:relative;">
-      <span class="btn-icon" id="chatIcon">💬</span>
+      <span class="btn-icon" id="chatIcon">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2v10z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
+        </svg>
+      </span>
       <span class="btn-label">Chat</span>
       <span id="unreadBadge" class="unread-badge"></span>
     </button>
+    <!-- Screen share / Present -->
+    <button id="toggleScreen" class="ctrl-btn" title="Share screen">
+      <span class="btn-icon">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect x="2" y="4" width="20" height="14" rx="2" stroke="currentColor" stroke-width="1.8"/>
+          <path d="M12 18v3M8 21h8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+          <path d="M12 8v5M9.5 10.5L12 8l2.5 2.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </span>
+      <span class="btn-label">Present</span>
+    </button>
+    <!-- Catalog (admin only) -->
     <button id="toggleCatalogBtn" class="ctrl-btn" title="Open Catalog" style="display:none;">
-      <span class="btn-icon">📦</span>
+      <span class="btn-icon">&#128230;</span>
       <span class="btn-label">Catalog</span>
     </button>
     <button id="sendAllCatalogBtn" class="ctrl-btn" title="Send All Visible" style="display:none;">
-      <span class="btn-icon">📤</span>
+      <span class="btn-icon">&#128228;</span>
       <span class="btn-label">Send All</span>
     </button>
+    <!-- End Call -->
     <button id="endCall" class="ctrl-btn ctrl-btn-end" title="End call">
-      <span class="btn-icon">📵</span>
+      <span class="btn-icon">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 10.8 19.79 19.79 0 01.13 2.17 2 2 0 012.11 0h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.09 7.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+          <line x1="4" y1="20" x2="20" y2="4" stroke="#fff" stroke-width="1.8" stroke-linecap="round"/>
+        </svg>
+      </span>
       <span class="btn-label">End Call</span>
     </button>
   </div>

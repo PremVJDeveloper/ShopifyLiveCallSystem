@@ -91,19 +91,24 @@ export function addProductMessage(product, isMine = false) {
     : '';
   const img = product.image_url || product.image?.src || '';
   const url = `https://vaama.co/products/${product.handle}`;
+  const senderLabel = isMine ? 'You' : 'Admin';
 
   const msgEl = document.createElement('div');
-  msgEl.className = `chat-message product-card-message ${isMine ? 'me-message' : 'peer-message'}`;
+  msgEl.className = 'chat-message product-card-message';
   msgEl.innerHTML = `
     <div class="message-meta">
-      <span>${isMine ? 'You' : 'Admin'} shared a product</span>
+      <span class="msg-name">${senderLabel} shared a product</span>
       <span class="msg-time">${formatTime(new Date())}</span>
     </div>
-    <a class="product-card-inline" href="${url}" target="_blank" rel="noopener">
-      ${img ? `<img src="${img}" alt="" />` : '<div class="product-no-img">📦</div>'}
-      <div class="product-card-info">
-        <strong>${escapeHtml(product.title || '')}</strong>
-        ${price ? `<span class="product-price">${price}</span>` : ''}
+    <a class="chat-product-card" href="${url}" target="_blank" rel="noopener">
+      <div class="chat-product-img">
+        ${img
+          ? `<img src="${img}" alt="${escapeHtml(product.title || '')}" />`
+          : `<div class="chat-product-no-img">📦</div>`}
+      </div>
+      <div class="chat-product-info">
+        <span class="chat-product-title">${escapeHtml(product.title || '')}</span>
+        ${price ? `<span class="chat-product-price">${price}</span>` : ''}
       </div>
     </a>
   `;
