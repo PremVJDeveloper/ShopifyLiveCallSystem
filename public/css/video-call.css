@@ -121,6 +121,8 @@ body {
   height: 100%;
   object-fit: cover;
   display: block;
+  position: relative;
+  z-index: 2;   /* renders above the no-video-placeholder background */
 }
 
 .local-tile video {
@@ -171,6 +173,12 @@ body {
   border-radius: 12px;
 }
 
+/* ── Receiving-share: remote tile stays visible, all 3 panels shown ──── */
+/* .receiving-share class is no longer used but kept for legacy safety  */
+.video-grid.screen-sharing.receiving-share .local-tile {
+  grid-row: 2;   /* stays in its own row */
+}
+
 /* Connecting overlay */
 .remote-overlay {
   position: absolute;
@@ -201,9 +209,10 @@ body {
   backdrop-filter: blur(6px);
   padding: 3px 10px;
   border-radius: 999px;
+  z-index: 3;   /* above video (z-index: 2) */
 }
 
-/* No video placeholder */
+/* No video placeholder — centered camera-off icon */
 .video-tile .no-video-placeholder {
   position: absolute;
   inset: 0;
@@ -213,7 +222,19 @@ body {
   justify-content: center;
   background: linear-gradient(180deg, #1D243F 0%, #121724 100%);
   gap: 12px;
+  z-index: 1;      /* sits below video (z-index: 2) so video covers it when streaming */
+  pointer-events: none;
 }
+
+.no-video-icon {
+  opacity: 0.6;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.no-video-icon svg { display: block; }
+
+/* Legacy .avatar style (kept for compatibility) */
 .no-video-placeholder .avatar {
   width: 72px;
   height: 72px;

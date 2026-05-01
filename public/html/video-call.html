@@ -54,12 +54,32 @@
           <div class="spinner-sm"></div>
           <p>Waiting for other party…</p>
         </div>
+        <!-- Camera-off placeholder shown when remote has no video -->
+        <div class="no-video-placeholder" id="remoteNoVideo">
+          <div class="no-video-icon">
+            <svg width="52" height="52" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <rect x="2" y="7" width="14" height="10" rx="2" stroke="rgba(255,255,255,0.35)" stroke-width="1.6"/>
+              <path d="M16 10.5l5-2.5v8l-5-2.5v-3z" stroke="rgba(255,255,255,0.35)" stroke-width="1.6" stroke-linejoin="round"/>
+              <line x1="3" y1="21" x2="21" y2="3" stroke="rgba(255,255,255,0.35)" stroke-width="1.6" stroke-linecap="round"/>
+            </svg>
+          </div>
+        </div>
         <video id="remoteVideo" autoplay playsinline></video>
         <div class="video-label" id="remoteLabel">Remote</div>
       </div>
 
       <!-- Local (you) — second tile desktop, PiP overlay mobile -->
       <div class="video-tile local-tile">
+        <!-- Camera-off placeholder shown when local camera is off -->
+        <div class="no-video-placeholder" id="localNoVideo">
+          <div class="no-video-icon">
+            <svg width="52" height="52" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <rect x="2" y="7" width="14" height="10" rx="2" stroke="rgba(255,255,255,0.35)" stroke-width="1.6"/>
+              <path d="M16 10.5l5-2.5v8l-5-2.5v-3z" stroke="rgba(255,255,255,0.35)" stroke-width="1.6" stroke-linejoin="round"/>
+              <line x1="3" y1="21" x2="21" y2="3" stroke="rgba(255,255,255,0.35)" stroke-width="1.6" stroke-linecap="round"/>
+            </svg>
+          </div>
+        </div>
         <video id="localVideo" autoplay muted playsinline></video>
         <div class="video-label" id="localLabel">You</div>
       </div>

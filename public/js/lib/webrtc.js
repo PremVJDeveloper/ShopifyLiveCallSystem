@@ -19,6 +19,8 @@ export class WebRTCManager {
     this.onTrackCallback = null;
     this.onIceCandidateCallback = null;
     this.onConnectionStateChangeCallback = null;
+    this.onNegotiationNeededCallback = null;  // fires when renegotiation is needed
+    this._screenSender = null;                // tracks the extra screen video sender
   }
 
   init() {
@@ -34,11 +36,22 @@ export class WebRTCManager {
 
   _setupListeners() {
     this.pc.ontrack = (event) => {
-      console.log('Got remote track:', event.track.kind);
+      console.log('Got remote track:', event.track.kind, event.track.id);
+      // Add new tracks to remoteStream; avoid duplicates
+      const existing = this.remoteStream.getTracks().map(t => t.id);
       event.streams[0].getTracks().forEach(track => {
-        this.remoteStream.addTrack(track);
+        if (!existing.includes(track.id)) {
+          this.remoteStream.addTrack(track);
+        }
       });
-      if (this.onTrackCallback) this.onTrackCallback(this.remoteStream);
+      if (this.onTrackCallback) this.onTrackCallback(this.remoteStream, event.track);
+    };
+
+    this.pc.onnegotiationneeded = async () => {
+      console.log('Negotiation needed');
+      if (this.onNegotiationNeededCallback) {
+        this.onNegotiationNeededCallback();
+      }
     };
 
     this.pc.onicecandidate = (event) => {
@@ -153,6 +166,27 @@ export class WebRTCManager {
       return sender.replaceTrack(newTrack);
     }
     return Promise.reject('No sender found for track kind: ' + oldTrackKind);
+  }
+
+  /**
+   * Add a screen video track as an EXTRA sender (camera sender untouched).
+   * Returns the new RTCRtpSender so the caller can remove it later.
+   */
+  addScreenTrack(screenTrack) {
+    // Wrap in a minimal MediaStream so the receiver's ontrack event.streams[0] is valid
+    const screenStream = new MediaStream([screenTrack]);
+    this._screenSender = this.pc.addTrack(screenTrack, screenStream);
+    return this._screenSender;
+  }
+
+  /**
+   * Remove the screen sender that was added by addScreenTrack().
+   */
+  removeScreenTrack() {
+    if (this._screenSender) {
+      try { this.pc.removeTrack(this._screenSender); } catch (e) { /* ignore */ }
+      this._screenSender = null;
+    }
   }
 
   close() {
