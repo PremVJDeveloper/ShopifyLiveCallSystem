@@ -167,6 +167,12 @@ async function init() {
     } catch { /* ignore */ }
   });
 
+  // Hide screen share button if not supported (e.g., most non-Safari browsers on iOS)
+  if (!navigator.mediaDevices || !navigator.mediaDevices.getDisplayMedia) {
+    if (toggleScreenBtn) toggleScreenBtn.style.display = 'none';
+    console.warn('Screen sharing not supported on this browser');
+  }
+
   await startCall();
 }
 
@@ -233,13 +239,16 @@ async function startCall() {
   rtcManager.onNegotiationNeededCallback = async () => {
     if (!callEstablished || !peerSocketId || !rtcManager) return;
     // Debounce rapid events
-    await new Promise(r => setTimeout(r, 300));
+    await new Promise(r => setTimeout(r, 500));
     if (!peerSocketId || !rtcManager) return;
     try {
+      console.log('Renegotiation needed, sending offer...');
       const offer = await rtcManager.createOffer({ offerToReceiveAudio: true, offerToReceiveVideo: true });
       socket.emit('offer', { room: roomId, offer, targetId: peerSocketId });
-      console.log('Renegotiation offer sent');
-    } catch (e) { console.error('Renegotiation offer failed:', e); }
+    } catch (e) { 
+      console.error('Renegotiation offer failed:', e);
+      Chat.addSystemMessage('Connection update failed. Please refresh if video stops.');
+    }
   };
 
   rtcManager.onConnectionStateChangeCallback = (state) => {
