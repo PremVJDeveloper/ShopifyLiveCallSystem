@@ -3,7 +3,7 @@
  */
 import { dom } from '../utils/dom.js';
 import {
-  toggleTrack, startScreenShare, stopAllTracks, replaceVideoTrack
+  toggleTrack, startScreenShare, stopAllTracks
 } from './media.js';
 
 let state = {
@@ -75,31 +75,36 @@ export function toggleAudio(btnEl) {
 }
 
 /**
- * Start/stop screen share, replacing the video track in the PeerConnection.
- * The screen renders in a dedicated #screenTile panel (Google Meet-style).
- * localVideo keeps the camera feed visible throughout.
+ * Start/stop screen share, ADDING the screen as a second video sender.
+ * The camera sender stays active — remote party receives BOTH streams.
+ * Renegotiation is triggered automatically via onnegotiationneeded.
  */
 export async function toggleScreenShare(btnEl) {
-  const videoGrid  = document.getElementById('videoGrid');
-  const screenTile = document.getElementById('screenTile');
+  const videoGrid   = document.getElementById('videoGrid');
+  const screenTile  = document.getElementById('screenTile');
   const screenVideo = document.getElementById('screenVideo');
 
   if (state.screenSharing) {
     // ── Stop screen share ──────────────────────────────────────
     stopAllTracks(state.screenStream);
-    state.screenStream = null;
+    state.screenStream  = null;
     state.screenSharing = false;
 
-    // Hide screen tile, restore normal grid layout
+    // Remove the extra screen sender (camera sender was never touched)
+    if (peerConnection) {
+      const senders = peerConnection.getSenders();
+      // Find the sender whose track matches the screen track (now stopped)
+      senders.forEach(s => {
+        if (s.track && s.track.kind === 'video' && s.track.readyState === 'ended') {
+          try { peerConnection.removeTrack(s); } catch (e) { /* ignore */ }
+        }
+      });
+    }
+
+    // Hide screen tile, restore normal layout
     if (screenTile)  screenTile.style.display  = 'none';
     if (screenVideo) screenVideo.srcObject = null;
     if (videoGrid)   videoGrid.classList.remove('screen-sharing');
-
-    // Restore original camera track in PeerConnection
-    if (peerConnection && originalStream) {
-      const origTrack = originalStream.getVideoTracks()[0];
-      if (origTrack) await replaceVideoTrack(peerConnection, origTrack);
-    }
 
     if (btnEl) {
       dom.removeClass(btnEl, 'active');
@@ -111,10 +116,14 @@ export async function toggleScreenShare(btnEl) {
       const screenStream = await startScreenShare();
       const videoTrack   = screenStream.getVideoTracks()[0];
 
-      // Replace the video track sent to the peer
-      if (peerConnection) await replaceVideoTrack(peerConnection, videoTrack);
+      // ADD screen as an extra sender — camera sender stays untouched!
+      if (peerConnection) {
+        // Wrap track in its own stream so receiver can identify it separately
+        const screenOnlyStream = new MediaStream([videoTrack]);
+        peerConnection.addTrack(videoTrack, screenOnlyStream);
+      }
 
-      // Show screen in the dedicated tile (localVideo keeps camera)
+      // Show screen locally in the dedicated tile (localVideo keeps camera)
       if (screenVideo) screenVideo.srcObject = screenStream;
       if (screenTile)  screenTile.style.display  = 'flex';
       if (videoGrid)   videoGrid.classList.add('screen-sharing');
@@ -122,7 +131,7 @@ export async function toggleScreenShare(btnEl) {
       state.screenStream  = screenStream;
       state.screenSharing = true;
 
-      // Auto-stop when user clicks browser's "Stop sharing" button
+      // Auto-stop when user clicks the browser's "Stop sharing" button
       videoTrack.onended = () => toggleScreenShare(btnEl);
 
       if (btnEl) {

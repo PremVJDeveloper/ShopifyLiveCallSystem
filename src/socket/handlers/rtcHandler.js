@@ -209,4 +209,18 @@ module.exports = function rtcHandler(io, socket) {
       userCount: data ? data.participants.length : 0,
     });
   });
+
+  // ─── screen-share relay ──────────────────────────────────────
+  // Relay to everyone else in the room so the receiver can update their layout.
+  socket.on('screen-share-start', ({ room }) => {
+    if (!isValidRoomId(room)) return;
+    socket.to(room).emit('screen-share-started', { by: socket.id });
+    logger.debug('Screen share started', { socketId: socket.id, room });
+  });
+
+  socket.on('screen-share-stop', ({ room }) => {
+    if (!isValidRoomId(room)) return;
+    socket.to(room).emit('screen-share-stopped', { by: socket.id });
+    logger.debug('Screen share stopped', { socketId: socket.id, room });
+  });
 };

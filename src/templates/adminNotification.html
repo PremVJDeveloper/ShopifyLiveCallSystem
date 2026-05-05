@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <title>New Call Scheduled — Vaama Live</title>
+</head>
+<body style="margin:0;padding:16px;background:#f8fafc;font-family:'Inter',Arial,sans-serif;color:#1e293b;">
+
+<table width="100%" cellpadding="0" cellspacing="0" border="0">
+<tr><td align="center">
+
+<table width="520" cellpadding="0" cellspacing="0" border="0"
+  style="width:520px;max-width:520px;background:#ffffff;border:1px solid #e2e8f0;border-radius:12px;overflow:hidden;">
+<tr><td>
+
+  <!-- Header bar -->
+  <div style="background:#28365B;padding:20px 28px;">
+    <h2 style="margin:0;color:#ffffff;font-family:'Inter',Arial,sans-serif;font-size:18px;font-weight:700;">
+      &#128222; New Scheduled Call
+    </h2>
+    <p style="margin:6px 0 0;color:rgba(255,255,255,0.7);font-size:13px;">{{fmtDate}} IST</p>
+  </div>
+
+  <!-- Body -->
+  <div style="padding:28px;">
+
+    <!-- Details table -->
+    <table width="100%" cellpadding="0" cellspacing="0" border="0"
+      style="font-family:'Inter',Arial,sans-serif;font-size:14px;margin-bottom:24px;">
+
+      <tr>
+        <td style="padding:10px 0;color:#64748b;width:110px;vertical-align:top;border-bottom:1px solid #f1f5f9;">Name</td>
+        <td style="padding:10px 0;font-weight:600;color:#1e293b;border-bottom:1px solid #f1f5f9;">{{name}}</td>
+      </tr>
+      <tr>
+        <td style="padding:10px 0;color:#64748b;vertical-align:top;border-bottom:1px solid #f1f5f9;">Phone</td>
+        <td style="padding:10px 0;color:#1e293b;border-bottom:1px solid #f1f5f9;">{{phone}}</td>
+      </tr>
+      <tr>
+        <td style="padding:10px 0;color:#64748b;vertical-align:top;border-bottom:1px solid #f1f5f9;">Email</td>
+        <td style="padding:10px 0;color:#1e293b;border-bottom:1px solid #f1f5f9;">{{email}}</td>
+      </tr>
+
+      {{#if lookingFor}}
+      <tr>
+        <td style="padding:10px 0;color:#64748b;vertical-align:top;border-bottom:1px solid #f1f5f9;">Category</td>
+        <td style="padding:10px 0;border-bottom:1px solid #f1f5f9;">
+          <span style="background:#E4E9F2;color:#28365B;padding:3px 10px;border-radius:999px;font-size:12px;font-weight:600;">{{lookingFor}}</span>
+        </td>
+      </tr>
+      {{/if}}
+
+      {{#if priceRange}}
+      <tr>
+        <td style="padding:10px 0;color:#64748b;vertical-align:top;border-bottom:1px solid #f1f5f9;">Price Range</td>
+        <td style="padding:10px 0;border-bottom:1px solid #f1f5f9;">
+          <span style="background:#fef3c7;color:#d97706;padding:3px 10px;border-radius:999px;font-size:12px;font-weight:600;">{{priceRange}}</span>
+        </td>
+      </tr>
+      {{/if}}
+
+      <tr>
+        <td style="padding:10px 0;color:#64748b;vertical-align:top;border-bottom:1px solid #f1f5f9;">Scheduled</td>
+        <td style="padding:10px 0;font-weight:600;color:#28365B;border-bottom:1px solid #f1f5f9;">{{fmtDate}} IST</td>
+      </tr>
+      <tr>
+        <td style="padding:10px 0;color:#64748b;vertical-align:top;">Join Link</td>
+        <td style="padding:10px 0;word-break:break-all;">
+          <a href="{{joinUrl}}" style="color:#28365B;font-size:13px;">{{joinUrl}}</a>
+        </td>
+      </tr>
+
+    </table>
+
+    <!-- CTA button -->
+    <a href="{{joinUrl}}"
+      style="display:inline-block;background:#28365B;color:#ffffff;text-decoration:none;padding:12px 28px;border-radius:6px;font-family:'Inter',Arial,sans-serif;font-size:14px;font-weight:600;">
+      Open Admin Panel &#8594;
+    </a>
+
+  </div>
+
+</td></tr>
+</table>
+
+</td></tr>
+</table>
+
+</body>
+</html>

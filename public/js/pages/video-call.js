@@ -179,15 +179,67 @@ async function startCall() {
   rtcManager.init();
   rtcManager.addStream(localStream);
 
-  rtcManager.onTrackCallback = (remoteStream) => {
-    remoteVideo.srcObject = remoteStream;
-    // Hide the "waiting" overlay as soon as a remote track arrives
+  // Track IDs seen so far — used to route the second video track to screenVideo
+  const seenVideoTrackIds = new Set();
+
+  rtcManager.onTrackCallback = (remoteStream, newTrack) => {
+    if (newTrack.kind === 'video') {
+      // First video track → camera → remoteVideo
+      // Second video track → screen share → screenVideo
+      if (seenVideoTrackIds.has(newTrack.id)) {
+        // Already seen — update remoteVideo stream reference
+        remoteVideo.srcObject = remoteStream;
+      } else {
+        seenVideoTrackIds.add(newTrack.id);
+        if (seenVideoTrackIds.size === 1) {
+          // First video track = camera feed
+          remoteVideo.srcObject = remoteStream;
+          // Restore visibility in case it was hidden from a previous share session
+          remoteVideo.style.opacity = '';
+          remoteVideo.style.zIndex  = '';
+        } else {
+          // Second video track = screen share arriving via WebRTC
+          const screenOnlyStream = new MediaStream([newTrack]);
+          const sv = document.getElementById('screenVideo');
+          if (sv) sv.srcObject = screenOnlyStream;
+          // Show the 3-panel layout on the receiver side
+          const st = document.getElementById('screenTile');
+          const vg = document.getElementById('videoGrid');
+          if (st) st.style.display = 'flex';
+          if (vg) vg.classList.add('screen-sharing');
+
+          // When the remote screen track ends, collapse the layout automatically
+          newTrack.onended = () => {
+            seenVideoTrackIds.delete(newTrack.id);
+            if (sv) sv.srcObject = null;
+            if (st) st.style.display = 'none';
+            if (vg) vg.classList.remove('screen-sharing');
+          };
+        }
+      }
+    } else {
+      // Audio track — always goes to remoteVideo stream
+      remoteVideo.srcObject = remoteStream;
+    }
+    // Hide the "waiting" overlay as soon as any remote track arrives
     const overlay = document.getElementById('remoteOverlay');
     if (overlay) overlay.style.display = 'none';
   };
 
-  rtcManager.onIceCandidateCallback = (candidate) => {
-    socket.emit('ice', { room: roomId, candidate, targetId: peerSocketId });
+  // Renegotiation: fires when screen track is added/removed.
+  // Either party can be the offerer for renegotiation.
+  // Guard: skip if call is not yet established (avoid conflicting with initial offer).
+  let callEstablished = false;
+  rtcManager.onNegotiationNeededCallback = async () => {
+    if (!callEstablished || !peerSocketId || !rtcManager) return;
+    // Debounce rapid events
+    await new Promise(r => setTimeout(r, 300));
+    if (!peerSocketId || !rtcManager) return;
+    try {
+      const offer = await rtcManager.createOffer({ offerToReceiveAudio: true, offerToReceiveVideo: true });
+      socket.emit('offer', { room: roomId, offer, targetId: peerSocketId });
+      console.log('Renegotiation offer sent');
+    } catch (e) { console.error('Renegotiation offer failed:', e); }
   };
 
   rtcManager.onConnectionStateChangeCallback = (state) => {
@@ -202,6 +254,7 @@ async function startCall() {
     if (connStatusEl) { connStatusEl.textContent = l.text; connStatusEl.className = `connection-badge ${l.css}`; }
 
     if (state === 'connected') {
+      callEstablished = true;   // renegotiation is now safe to fire
       callStartTime = callStartTime || Date.now();
       startDurationTimer();
       Chat.addSystemMessage('Video call connected ✓');
@@ -225,8 +278,19 @@ async function startCall() {
     stream: localStream,
     pc: rtcManager.pc,
     localVideo,
-    onStateChange: null,
+    onStateChange: (state) => {
+      // Notify remote party when this user starts/stops sharing
+      if (state.screenSharing) {
+        socket.emit('screen-share-start', { room: roomId });
+      } else {
+        socket.emit('screen-share-stop', { room: roomId });
+      }
+    },
   });
+
+  rtcManager.onIceCandidateCallback = (candidate) => {
+    socket.emit('ice', { room: roomId, candidate, targetId: peerSocketId });
+  };
 
   // Notify server media is ready
   socket.emit('room-joined', { room: roomId, role, mediaReady: true });
@@ -349,6 +413,47 @@ socket.on('user-reconnected', (data) => {
 
 socket.on('chat-message', (data) => {
   Chat.addPeerMessage(data);
+});
+
+// ─── Remote screen-share layout ────────────────────────────────
+// When the OTHER party starts screen sharing, their video track has been
+// replaced with the screen track. We show their stream in screenTile,
+// keep remoteTile visible (camera-off placeholder since track is replaced),
+// and keep localTile visible — matching the 3-panel layout on both sides.
+const screenTile  = document.getElementById('screenTile');
+const screenVideo = document.getElementById('screenVideo');
+const remoteTile  = document.querySelector('.remote-tile');
+const videoGrid   = document.getElementById('videoGrid');
+
+socket.on('screen-share-started', () => {
+  // The remote side added a second video track. onTrackCallback already routed
+  // it to screenVideo when onnegotiationneeded / ontrack fired.
+  // Here we just ensure the layout is correct and remoteVideo stays visible.
+  remoteVideo.style.opacity = '';
+  remoteVideo.style.zIndex  = '';
+  if (screenTile) screenTile.style.display = 'flex';
+  if (remoteTile) remoteTile.style.display = '';
+  if (videoGrid) {
+    videoGrid.classList.add('screen-sharing');
+    videoGrid.classList.remove('receiving-share');
+  }
+  Chat.addSystemMessage('Remote party started screen sharing');
+});
+
+socket.on('screen-share-stopped', () => {
+  // Clear the screen video. remoteVideo (camera) was always streaming.
+  remoteVideo.style.opacity = '';
+  remoteVideo.style.zIndex  = '';
+
+  const sv = document.getElementById('screenVideo');
+  if (sv) sv.srcObject = null;
+  if (screenTile)  screenTile.style.display = 'none';
+  if (remoteTile)  remoteTile.style.display = '';
+  if (videoGrid) {
+    videoGrid.classList.remove('screen-sharing');
+    videoGrid.classList.remove('receiving-share');
+  }
+  Chat.addSystemMessage('Remote party stopped screen sharing');
 });
 
 socket.on('product-shared', (data) => {
