@@ -67,12 +67,27 @@ export async function requestMedia() {
 
 /**
  * Start screen sharing. Returns a screen stream.
+ * iOS Safari is very sensitive to constraints. We use simple video: true
+ * and avoid audio: true on mobile as it often causes failures.
  */
 export async function startScreenShare() {
-  return navigator.mediaDevices.getDisplayMedia({
-    video: { cursor: 'always', displaySurface: 'monitor' },
-    audio: true,
-  });
+  const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+  
+  const constraints = {
+    video: isMobile ? true : { cursor: 'always' },
+    audio: !isMobile // Audio sharing is rarely supported on mobile browsers
+  };
+
+  try {
+    return await navigator.mediaDevices.getDisplayMedia(constraints);
+  } catch (err) {
+    // Fallback for browsers that might fail with audio: true or complex video
+    if (constraints.audio || typeof constraints.video === 'object') {
+      console.warn('Screen share failed with constraints, retrying with minimal...', err);
+      return await navigator.mediaDevices.getDisplayMedia({ video: true });
+    }
+    throw err;
+  }
 }
 
 /**

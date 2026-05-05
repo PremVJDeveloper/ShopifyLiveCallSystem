@@ -140,6 +140,17 @@ export async function toggleScreenShare(btnEl) {
       }
     } catch (e) {
       console.error('Screen share error:', e);
+      let errorMsg = 'Screen sharing failed.';
+      
+      if (e.name === 'NotAllowedError') {
+        errorMsg = 'Permission denied. Please allow screen recording in your browser/system settings.';
+      } else if (e.name === 'NotSupportedError' || !navigator.mediaDevices.getDisplayMedia) {
+        errorMsg = 'Your browser does not support screen sharing. Please use Safari on iOS 15+ or Chrome/Edge on Desktop.';
+      } else if (/iPhone|iPad|iPod/i.test(navigator.userAgent)) {
+        errorMsg = 'iOS Screen Sharing: Ensure you are using Safari and have "Screen Recording" enabled in Control Center.';
+      }
+
+      alert(errorMsg);
     }
   }
   _notify({ ...state });
